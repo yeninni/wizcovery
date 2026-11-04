@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'Wiz Pretendard Black';
+  src: url('./assets/fonts/Pretendard-Black.otf') format('opentype');
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
+/* Use the uploaded Black face consistently, including controls and SVG labels. */
+html, body, body *, body *::before, body *::after {
+  font-family: 'Wiz Pretendard Black', sans-serif !important;
+  font-weight: 900 !important;
+  font-synthesis: none;
+}
