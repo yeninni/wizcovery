@@ -1,0 +1,23 @@
+{
+  "timezone": "Asia/Seoul",
+  "refresh_seconds": 5,
+  "opening": "10:00",
+  "closing": "22:00",
+  "game_start_by_weekday": {
+    "0": null,
+    "1": "18:30",
+    "2": "18:30",
+    "3": "18:30",
+    "4": "18:30",
+    "5": "14:00",
+    "6": "14:00"
+  },
+  "weekday_demand": [0.35, 0.8, 0.9, 1.0, 1.25, 1.6, 1.45],
+  "marking_cutoff_minutes_before_game": 60,
+  "marking_processing_min": 15,
+  "marking_processing_max": 20,
+  "pickup_lead_minutes": 30,
+  "pickup_slot_minutes": 30,
+  "pickup_cutoff_minutes_before_game": 30,
+  "restock_at": "16:00"
+}

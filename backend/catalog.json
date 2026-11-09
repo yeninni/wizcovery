@@ -1,0 +1,175 @@
+[
+  {
+    "id": 1,
+    "name": "2026 홈 마킹 유니폼",
+    "player": "최원준",
+    "category": "유니폼",
+    "price": 119000,
+    "zone": "B",
+    "kind": "home",
+    "tag": "FAN FAVORITE",
+    "sizes": {
+      "90": 8,
+      "95": 4,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95",
+    "mapZone": "uniform"
+  },
+  {
+    "id": 2,
+    "name": "2026 어웨이 마킹 유니폼",
+    "player": "최원준",
+    "category": "유니폼",
+    "price": 119000,
+    "zone": "B",
+    "kind": "away",
+    "tag": "AWAY EDITION",
+    "sizes": {
+      "90": 3,
+      "95": 0,
+      "100": 7,
+      "105": 4
+    },
+    "selected": "95",
+    "mapZone": "uniform"
+  },
+  {
+    "id": 3,
+    "name": "위즈 클래식 볼캡",
+    "category": "모자",
+    "price": 35000,
+    "zone": "A",
+    "kind": "cap",
+    "tag": "BEST PICK",
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE",
+    "mapZone": null
+  },
+  {
+    "id": 4,
+    "name": "2026 홈 레플리카 유니폼",
+    "category": "유니폼",
+    "price": 89000,
+    "zone": "B",
+    "kind": "home",
+    "tag": "ESSENTIAL",
+    "sizes": {
+      "90": 5,
+      "95": 9,
+      "100": 14,
+      "105": 8
+    },
+    "selected": "95",
+    "mapZone": "uniform"
+  },
+  {
+    "id": 5,
+    "name": "위즈 응원 타월",
+    "category": "응원용품",
+    "price": 15000,
+    "zone": "C",
+    "kind": "towel",
+    "tag": "CHEER TOGETHER",
+    "sizes": {
+      "FREE": 24
+    },
+    "selected": "FREE",
+    "mapZone": null
+  },
+  {
+    "id": 6,
+    "name": "위즈 유니폼 키링",
+    "category": "액세서리",
+    "price": 12000,
+    "zone": "D",
+    "kind": "key",
+    "tag": "LITTLE WIZ",
+    "sizes": {
+      "FREE": 0
+    },
+    "selected": "FREE",
+    "mapZone": null
+  },
+  {
+    "id": 7,
+    "name": "수원 콜라보 굿즈 세트",
+    "category": "액세서리",
+    "price": 22000,
+    "zone": "입구 앞",
+    "mapZone": "collab",
+    "kind": "key",
+    "tag": "SUWON COLLAB",
+    "sizes": {
+      "FREE": 8
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 8,
+    "name": "콜라보 팝업 유니폼",
+    "category": "유니폼",
+    "price": 129000,
+    "zone": "오른쪽 팝업",
+    "mapZone": "collab",
+    "kind": "away",
+    "tag": "COLLAB POP-UP",
+    "sizes": {
+      "90": 3,
+      "95": 4,
+      "100": 0,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 9,
+    "name": "고영표 홈 마킹 유니폼 (상품 예시)",
+    "player": "고영표",
+    "category": "유니폼",
+    "price": 119000,
+    "mapZone": "uniform",
+    "kind": "home",
+    "tag": "DEMO PLAYER",
+    "sizes": {
+      "90": 3,
+      "95": 5,
+      "100": 6,
+      "105": 2
+    },
+    "selected": "95"
+  },
+  {
+    "id": 10,
+    "name": "강백호 선데이 마킹 유니폼 (상품 예시)",
+    "player": "강백호",
+    "category": "유니폼",
+    "price": 129000,
+    "mapZone": "uniform",
+    "kind": "sunday",
+    "tag": "DEMO PLAYER",
+    "sizes": {
+      "90": 2,
+      "95": 0,
+      "100": 7,
+      "105": 3
+    },
+    "selected": "95"
+  },
+  {
+    "id": 11,
+    "name": "쿨링 응원 타월 (상품 예시)",
+    "category": "응원용품",
+    "price": 19000,
+    "mapZone": null,
+    "kind": "towel",
+    "tag": "SUMMER DEMO",
+    "sizes": {
+      "FREE": 10
+    },
+    "selected": "FREE"
+  }
+]
