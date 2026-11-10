@@ -97,7 +97,7 @@ def snapshot(at: datetime | None = None, seed: int = 42, scenario: str = 'normal
                     post_integral += demand_at(t, game, weekday, scenario) * (t - math.floor(t))
                 replenished = 30
                 on_hand += max(0, replenished - math.floor(post_integral * rate))
-            if scenario == 'soldout' and item['id'] in (1, 2, 8) and size == '95':
+            if scenario == 'soldout' and item['id'] in (1, 2, 8, 586, 587) and size == '95':
                 on_hand = 0
             variants.append({'sku': f'{item["id"]}-{size}', 'size': size,
                              'opening_stock': initial, 'replenished': replenished,
