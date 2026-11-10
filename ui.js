@@ -1,6 +1,5 @@
 /* Review-only layout helpers. No network requests or publishing side effects. */
 (()=>{
-  document.querySelectorAll('.demo-settings-link').forEach(link=>link.addEventListener('click',e=>{const demo=document.querySelector('#demo-settings');if(demo){e.preventDefault();demo.open=true;demo.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'center'});demo.querySelector('select')?.focus({preventScroll:true});}else link.href='#controls';}));
   const filter=document.querySelector('.filter-drawer');
   if(filter){const desktop=matchMedia('(min-width: 851px)');const sync=()=>filter.open=desktop.matches;sync();desktop.addEventListener('change',sync);}
   if(document.body.dataset.page==='map'){

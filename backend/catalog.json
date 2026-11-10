@@ -15,7 +15,10 @@
       "105": 6
     },
     "selected": "95",
-    "mapZone": "uniform"
+    "mapZone": "uniform",
+    "storefront": false,
+    "image": "assets/products/586-authentic-home-uniform.jpg",
+    "imageAlt": "2026 어센틱 홈 유니폼 앞면"
   },
   {
     "id": 2,
@@ -33,7 +36,10 @@
       "105": 4
     },
     "selected": "95",
-    "mapZone": "uniform"
+    "mapZone": "uniform",
+    "storefront": false,
+    "image": "assets/products/587-authentic-away-uniform.jpg",
+    "imageAlt": "2026 어센틱 어웨이 유니폼 앞면"
   },
   {
     "id": 3,
@@ -47,7 +53,8 @@
       "FREE": 16
     },
     "selected": "FREE",
-    "mapZone": null
+    "mapZone": null,
+    "storefront": false
   },
   {
     "id": 4,
@@ -64,7 +71,10 @@
       "105": 8
     },
     "selected": "95",
-    "mapZone": "uniform"
+    "mapZone": "uniform",
+    "storefront": false,
+    "image": "assets/products/590-replica-home-uniform.jpg",
+    "imageAlt": "2026 레플리카 홈 유니폼 앞면"
   },
   {
     "id": 5,
@@ -78,7 +88,8 @@
       "FREE": 24
     },
     "selected": "FREE",
-    "mapZone": null
+    "mapZone": null,
+    "storefront": false
   },
   {
     "id": 6,
@@ -92,7 +103,8 @@
       "FREE": 0
     },
     "selected": "FREE",
-    "mapZone": null
+    "mapZone": null,
+    "storefront": false
   },
   {
     "id": 7,
@@ -106,7 +118,8 @@
     "sizes": {
       "FREE": 8
     },
-    "selected": "FREE"
+    "selected": "FREE",
+    "storefront": false
   },
   {
     "id": 8,
@@ -123,11 +136,12 @@
       "100": 0,
       "105": 6
     },
-    "selected": "95"
+    "selected": "95",
+    "storefront": false
   },
   {
     "id": 9,
-    "name": "고영표 홈 마킹 유니폼 (상품 예시)",
+    "name": "고영표 홈 마킹 유니폼",
     "player": "고영표",
     "category": "유니폼",
     "price": 119000,
@@ -140,11 +154,14 @@
       "100": 6,
       "105": 2
     },
-    "selected": "95"
+    "selected": "95",
+    "storefront": false,
+    "image": "assets/products/586-authentic-home-uniform.jpg",
+    "imageAlt": "2026 어센틱 홈 유니폼 앞면"
   },
   {
     "id": 10,
-    "name": "강백호 선데이 마킹 유니폼 (상품 예시)",
+    "name": "강백호 선데이 마킹 유니폼",
     "player": "강백호",
     "category": "유니폼",
     "price": 129000,
@@ -157,11 +174,12 @@
       "100": 7,
       "105": 3
     },
-    "selected": "95"
+    "selected": "95",
+    "storefront": false
   },
   {
     "id": 11,
-    "name": "쿨링 응원 타월 (상품 예시)",
+    "name": "쿨링 응원 타월",
     "category": "응원용품",
     "price": 19000,
     "mapZone": null,
@@ -169,6 +187,283 @@
     "tag": "SUMMER DEMO",
     "sizes": {
       "FREE": 10
+    },
+    "selected": "FREE",
+    "storefront": false
+  },
+  {
+    "id": 586,
+    "name": "2026 어센틱 홈 유니폼",
+    "category": "유니폼",
+    "price": 169000,
+    "kind": "home",
+    "image": "assets/products/586-authentic-home-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 587,
+    "name": "2026 어센틱 어웨이 유니폼",
+    "category": "유니폼",
+    "price": 169000,
+    "kind": "away",
+    "image": "assets/products/587-authentic-away-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 588,
+    "name": "2026 클린 홈 유니폼",
+    "category": "유니폼",
+    "price": 129000,
+    "kind": "home",
+    "image": "assets/products/588-clean-home-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 589,
+    "name": "2026 클린 어웨이 유니폼",
+    "category": "유니폼",
+    "price": 129000,
+    "kind": "away",
+    "image": "assets/products/589-clean-away-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 590,
+    "name": "2026 레플리카 홈 유니폼",
+    "category": "유니폼",
+    "price": 89000,
+    "kind": "home",
+    "image": "assets/products/590-replica-home-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 591,
+    "name": "2026 레플리카 어웨이 유니폼",
+    "category": "유니폼",
+    "price": 89000,
+    "kind": "away",
+    "image": "assets/products/591-replica-away-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 580,
+    "name": "빅또리 썸머 유니폼",
+    "category": "유니폼",
+    "price": 129000,
+    "kind": "summer",
+    "image": "assets/products/580-bigttori-summer-uniform.jpg",
+    "storefront": true,
+    "mapZone": "uniform",
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 583,
+    "name": "2025 정조대왕 쿨링 티셔츠",
+    "category": "의류",
+    "price": 39000,
+    "kind": "tshirt",
+    "image": "assets/products/583-jeongjo-cooling-tshirt.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "90": 5,
+      "95": 8,
+      "100": 12,
+      "105": 6
+    },
+    "selected": "95"
+  },
+  {
+    "id": 597,
+    "name": "또리 캐릭터 자수 볼캡",
+    "category": "모자",
+    "price": 35000,
+    "kind": "cap",
+    "image": "assets/products/597-ttori-embroidered-cap.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 594,
+    "name": "GRID 전사 머플러",
+    "category": "응원용품",
+    "price": 25000,
+    "kind": "muffler",
+    "image": "assets/products/594-grid-muffler.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 600,
+    "name": "버스트 오브 매직 니트 머플러",
+    "category": "응원용품",
+    "price": 35000,
+    "kind": "muffler",
+    "image": "assets/products/600-burst-magic-knit-muffler.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 595,
+    "name": "또리 인형 크로스백",
+    "category": "액세서리",
+    "price": 29000,
+    "kind": "bag",
+    "image": "assets/products/595-ttori-plush-crossbody.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 596,
+    "name": "빅 인형 크로스백",
+    "category": "액세서리",
+    "price": 29000,
+    "kind": "bag",
+    "image": "assets/products/596-vic-plush-crossbody.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 598,
+    "name": "로고 에코백",
+    "category": "액세서리",
+    "price": 22000,
+    "kind": "bag",
+    "image": "assets/products/598-logo-eco-bag.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 599,
+    "name": "로고프린트 3단 우산",
+    "category": "액세서리",
+    "price": 24000,
+    "kind": "umbrella",
+    "image": "assets/products/599-logo-folding-umbrella.jpg",
+    "storefront": true,
+    "mapZone": null,
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 584,
+    "name": "어웨이 마킹키트 · 장성우 22",
+    "category": "마킹키트",
+    "price": 20000,
+    "kind": "marking-kit",
+    "image": "assets/products/584-away-marking-kit.jpg",
+    "storefront": true,
+    "mapZone": "marking-sheet",
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 585,
+    "name": "핑크 클라우드 마킹키트 · 장성우 22",
+    "category": "마킹키트",
+    "price": 22000,
+    "kind": "marking-kit",
+    "image": "assets/products/585-pink-cloud-marking-kit.jpg",
+    "storefront": true,
+    "mapZone": "marking-sheet",
+    "sizes": {
+      "FREE": 16
+    },
+    "selected": "FREE"
+  },
+  {
+    "id": 593,
+    "name": "빅또리 빅토리 마킹키트 · 장성우 22",
+    "category": "마킹키트",
+    "price": 20000,
+    "kind": "marking-kit",
+    "image": "assets/products/593-bigttori-victory-marking-kit.jpg",
+    "storefront": true,
+    "mapZone": "marking-sheet",
+    "sizes": {
+      "FREE": 16
     },
     "selected": "FREE"
   }
