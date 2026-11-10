@@ -13,7 +13,7 @@ from simulator import SCENARIOS, parse_time, snapshot
 SITE_ROOT = Path(__file__).resolve().parent.parent
 STATIC_FILES = {'index.html', 'store-map.html', 'pickup.html', 'smart.html', 'simulator.html',
                 'simulator-dashboard.js', 'catalog.js', 'ontology.js', 'smart.js',
-                'experience.js', 'experience.css', 'typography.css', 'browser-simulator.js', 'live-demo.js', 'ui.css', 'ui.js', 'pixel-store.css', 'pixel-store.js', 'character-art.js'}
+                'experience.js', 'experience.css', 'typography.css', 'browser-simulator.js', 'live-demo.js', 'ui.css', 'ui.js', 'pixel-store.css', 'pixel-store.js', 'character-art.js', 'goods.js', 'pickup.js', 'store-map.js', 'product-art.js'}
 
 
 class Handler(BaseHTTPRequestHandler):
