@@ -51,8 +51,8 @@ node --test tests/*.test.cjs
 
 화면 구조는 HTML, 공통 스타일은 `ui.css`, 각 화면의 동작은 `goods.js` / `store-map.js` / `pickup.js` / `smart.js`로 분리되어 있습니다. `product-art.js`는 상품 사진과 표시용 상품명을 공유합니다. 홈페이지에는 `assets/products/`의 업로드 사진 18종을 표시하며, 원본 연결 정보는 해당 폴더의 README에 정리했습니다. UI 폰트는 `assets/fonts/Pretendard-Black.otf`이며 `typography.css`에서 버튼·입력·SVG 텍스트까지 적용합니다.
 
-캐릭터의 ‘왕복 1회’ 안내는 목적지에서 입구로 복귀한 뒤 종료합니다. 다시 걷는 동작은 ‘다시 안내’ 또는 재시작 버튼을 눌러야 시작됩니다. Playwright와 Chromium이 있는 개발 환경에서는 다음 회귀 검증을 실행할 수 있습니다.
+캐릭터의 ‘왕복 1회’ 안내는 목적지에서 입구로 복귀한 뒤 종료합니다. 다시 걷는 동작은 ‘다시 안내’ 또는 재시작 버튼을 눌러야 시작됩니다. 모바일에서는 지도 옆 시작 버튼이 경로를 직접 실행하며 화면 밖의 하단 버튼을 대신 누르지 않습니다. 하단에서 안내를 시작하면 지도와 캐릭터가 보이는 위치로 돌아옵니다. Playwright와 Chromium이 있는 개발 환경에서는 다음 회귀 검증을 실행할 수 있습니다.
 
 ```bash
-node --test tests/store-guide.browser.cjs
+node --test tests/store-guide.browser.cjs tests/map-mobile-scroll.browser.cjs
 ```

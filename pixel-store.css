@@ -2,6 +2,8 @@ body[data-page=map] .floor-scroll{background:#fff;border:2px solid #e5ddcf;borde
 @media(max-width:600px){.pixel-guide{gap:9px;padding:10px;margin-top:12px;flex-wrap:wrap}.pixel-guide>img{width:36px;height:50px}.pixel-guide-copy{flex:1;min-width:180px}.pixel-guide-copy strong{font-size:11px}.pixel-guide-status{font-size:10px}.pixel-guide-copy small{font-size:8px}.pixel-guide-controls{display:flex;flex-wrap:wrap;justify-content:flex-end;width:100%;gap:8px;padding-left:45px}.pixel-guide-controls label{margin-left:auto;font-size:9px}.pixel-guide-controls button{font-size:10px}.pixel-guide-controls .pixel-play{min-width:105px}body[data-page=map] .floor-scroll{margin-top:15px}}
 @media(prefers-reduced-motion:reduce){#iso-map .pixel-route{animation:none}}
 /* Detailed sprite art: one aligned 4-direction atlas, shown larger on demand. */
+/* Animated SVG content must not become a mobile page scroll anchor. */
+.floor-scroll,.pixel-guide{overflow-anchor:none}.pixel-guide{scroll-margin-top:16px}
 .pixel-guide>.character-portrait{position:relative;flex:none;width:64px;height:82px;border:1px solid #e0cdb4;background:#f1e4d3;padding:0;overflow:hidden;border-radius:6px;cursor:zoom-in;box-shadow:inset 0 0 0 3px #faf2e6}
 .character-portrait>img{width:64px;height:96px;max-width:none;position:absolute;top:2px;left:-1px;image-rendering:pixelated;object-fit:contain}
 .character-portrait>span{position:absolute;right:3px;bottom:3px;background:#fff9ee;color:#a1726d;width:14px;height:14px;text-align:center;font-size:10px;line-height:14px;border-radius:3px}

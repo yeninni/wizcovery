@@ -1,7 +1,7 @@
 /* Pixel shop renderer and decorative route guide. Not location tracking. */
 const PixelStore=(()=>{
   const NS='http://www.w3.org/2000/svg';
-  function create({svg,zones,geometry,project}){
+  function create({svg,zones,geometry,project,onRouteRequest}){
     const el=(tag,attrs={},parent=svg)=>{const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));parent.append(n);return n};
     svg.replaceChildren();svg.classList.add('pixel-map');svg.setAttribute('viewBox','-30 30 850 500');svg.setAttribute('aria-label','픽셀 아트 팀스토어 배치도와 유니폼 안내 캐릭터');
     const canvas=document.createElement('canvas');canvas.width=425;canvas.height=250;
@@ -58,7 +58,7 @@ const PixelStore=(()=>{
     function start(){if(!route.length||reduced.matches)return;if(!artReady){setMode(artFailed?'error':'loading',artFailed?'캐릭터 원화를 불러오지 못했어요. 경로는 지도에서 확인할 수 있어요.':'안내 캐릭터 준비 중');return;}stop();setMode('walking',forward?zones[selected].title+' · 이동 중':'입구로 복귀 중');request=requestAnimationFrame(animate);}
     function setRoute(raw){stop();route=raw?raw.trim().split(/\s+/).map(pair=>pair.split(',').map(Number)):[];if(route.length&&(route[0][0]!==50||route[0][1]!==94))route.unshift([50,94]);total=route.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-route[i][0],p[1]-route[i][1]),0);travel=0;forward=true;hold=0;elapsed=0;path.setAttribute('points',route.map(p=>project(...p,1).join(',')).join(' '));path.classList.toggle('outside-route',route.some(p=>p[1]>100));position(route[0]||[50,94]);if(!route.length){setMode('idle','입구에서 대기 중 · 구역을 선택하세요.');return}if(reduced.matches){position(route.at(-1));setMode('arrived','동작 줄이기 설정 · 목적지에 캐릭터를 표시했어요.');return}start();}
     function select(id){selected=zones[id]?id:null;const g=geometry[id];marker.style.display=g?'':'none';if(g){const [x,y,w,d,h]=g;marker.setAttribute('transform','translate('+project(x+w/2,y+d/2,h+23).join(',')+')');}play.disabled=!selected||reduced.matches||!artReady;}
-    play.onclick=()=>{if(mode==='walking'){stop();setMode('paused','안내 일시정지');return}if(!route.length){document.querySelector('#route-button').click();return}if(['arrived','completed'].includes(mode)){travel=0;forward=true;hold=0;}start();};replay.onclick=()=>{travel=0;forward=true;hold=0;start()};
+    play.onclick=()=>{if(mode==='walking'){stop();setMode('paused','안내 일시정지');return}if(!route.length){onRouteRequest?.();return}if(['arrived','completed'].includes(mode)){travel=0;forward=true;hold=0;}start();};replay.onclick=()=>{travel=0;forward=true;hold=0;start()};
     reduced.addEventListener('change',()=>{stop();if(mode==='completed'){position(route[0]||[50,94]);setMode('completed','입구 복귀 완료 · 안내 종료');return;}if(reduced.matches){position(route.at(-1)||[50,94]);setMode(route.length?'arrived':'idle','동작 줄이기 적용');}else setMode(route.length?'paused':'idle','길 안내를 시작할 수 있습니다.');});
     document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='walking'){hiddenResume=true;stop();}else if(!document.hidden&&hiddenResume){hiddenResume=false;if(mode==='walking')start();}});
     function inspectCharacter(){
