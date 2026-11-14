@@ -4,7 +4,12 @@ const WizSim = (() => {
   const config = Object.freeze({timezone:'Asia/Seoul',refresh_seconds:5,opening:600,closing:1320,
     games:[null,1110,1110,1110,1110,840,840],weekdayDemand:[.35,.8,.9,1,1.25,1.6,1.45]});
   const key='wiz-simulation-v1';
-  let memory={mode:'live',at:'',seed:42,scenario:'normal'};
+  function defaultOpenTime(){
+    const date=new Date(kstValue(new Date()).slice(0,10)+'T00:00:00Z');
+    date.setUTCDate(date.getUTCDate()+(6-date.getUTCDay()+7)%7);
+    return date.toISOString().slice(0,10)+'T11:00';
+  }
+  let memory={mode:'fixed',at:defaultOpenTime(),seed:42,scenario:'normal'};
   const isoMinute=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
   function parseTime(raw){if(!raw)return new Date();if(typeof raw==='string'&&!/(Z|[+-]\d\d:\d\d)$/.test(raw))raw+=' +09:00'.trim();const value=new Date(raw);if(!Number.isFinite(value.getTime()))throw Error('올바른 날짜·시간을 입력해 주세요.');return value;}
   function kstValue(date){return new Intl.DateTimeFormat('sv-SE',{timeZone:config.timezone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).format(date).replace(' ','T');}

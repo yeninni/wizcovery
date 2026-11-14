@@ -17,6 +17,11 @@ test('compact settings change visible store data, persist across pages, and rese
     await page.clock.install({time:new Date('2026-11-11T03:00:00+09:00')});
     const base='http://127.0.0.1:'+server.address().port;
     await page.goto(base+'/index.html');await page.evaluate(()=>document.fonts.ready);
+    assert.equal(await page.locator('#hero-store-state').innerText(),'영업 중');
+    assert.equal(await page.evaluate(()=>WizSim.read().mode),'fixed');
+    await page.goto(base+'/pickup.html');assert.ok(await page.locator('.available-slots button').count()>0);
+    await page.goto(base+'/smart.html');assert.ok(await page.locator('.result').count()>0);
+    await page.goto(base+'/index.html');
     const launcher=page.getByRole('button',{name:'데이터 설정',exact:true}),dialog=page.locator('#data-settings-dialog');
     assert.equal(await launcher.count(),1);assert.equal(await dialog.isVisible(),false);
     assert.ok((await launcher.boundingBox()).width<150);
@@ -44,9 +49,11 @@ test('compact settings change visible store data, persist across pages, and rese
     await page.getByRole('button',{name:'데이터 설정',exact:true}).click();await page.locator('#data-settings-scenario').selectOption('busy');await page.getByRole('button',{name:'데이터 설정 닫기'}).click();assert.equal(await page.evaluate(()=>WizSim.read().scenario),'restock');
     await page.goto(base+'/pickup.html');await page.getByRole('button',{name:'데이터 설정',exact:true}).click();await page.getByRole('button',{name:'영업 종료',exact:true}).click();
     assert.equal(await page.locator('.available-slots').count(),0);assert.match(await page.locator('#slots').innerText(),/영업 종료/);
+    await page.goto(base+'/index.html');assert.equal(await page.locator('#hero-store-state').innerText(),'영업 종료');
     await page.goto(base+'/store-map.html');assert.equal(await page.getByRole('button',{name:'데이터 설정',exact:true}).count(),1);
     await page.getByRole('button',{name:'데이터 설정',exact:true}).click();await page.getByRole('button',{name:'현재 시각으로',exact:true}).click();
     settings=await page.evaluate(()=>WizSim.read());assert.equal(settings.mode,'live');assert.equal(settings.at,'');assert.equal(settings.scenario,'normal');
+    await page.goto(base+'/index.html');assert.equal(await page.locator('#hero-store-state').innerText(),'영업 종료');assert.equal(await page.evaluate(()=>WizSim.read().mode),'live');
     assert.deepEqual(errors,[]);
   }finally{await browser?.close();await new Promise(r=>server.close(r));}
 });

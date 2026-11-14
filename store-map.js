@@ -3,7 +3,7 @@ const project=(x,y,z=0)=>[410+(x-y)*3.5,125+(x+y)*1.7-z];
 const geometry={uniform:[1,0,40,9,27],'uniform-round':[15,14,7,12,16],lastseason:[53,0,46,9,27],'marking-sheet':[1,34,40,11,13],goods1:[70,11,5,34,26],goods2:[80.5,11,5,34,26],goods3:[91,11,5,34,26],selfcheckout:[1,55,40,27,15],checkout:[57,68,9.5,13,18],collab:[69,53,27.5,32,14],'marking-service':[35,143,26,10,10]};
 const pixelStore=PixelStore.create({svg:document.querySelector('#iso-map'),zones,geometry,project,onRouteRequest:()=>setRouteVisible(true)});
 function updatePin(id){pixelStore.select(id)}
-function drawRoute(points){pixelStore.setRoute(points)}
+function drawRoute(points,options){pixelStore.setRoute(points,options)}
 function revealRouteMap(){
  if(!matchMedia('(max-width: 850px)').matches)return;
  const floor=document.querySelector('.floor-scroll'),rect=floor.getBoundingClientRect();
@@ -15,7 +15,7 @@ function revealRouteMap(){
 }
 function setRouteVisible(visible,reveal=false){
  if(!zones[selected])return;
- routeVisible=visible;drawRoute(visible?zones[selected].points:'');
+ routeVisible=visible;drawRoute(visible?zones[selected].points:'',{manual:visible});
  $('#route-button').textContent=visible?'경로 숨기기':'길 안내 시작';
  if(visible&&reveal)revealRouteMap();
 }
