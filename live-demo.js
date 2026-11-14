@@ -1,7 +1,7 @@
 /* Shared store updates and a compact, opt-in data settings dialog. */
 (()=>{
   const crowd={closed:'영업 종료',low:'여유',medium:'보통',high:'혼잡'};
-  let syncSettings=()=>{};
+  let syncSettings=()=>{},syncDataset=()=>{};
   function paint(data){
     const {meta,store}=data;
     const stat=document.querySelectorAll('.stat strong');
@@ -24,6 +24,7 @@
     });
     document.querySelectorAll('.ux-marking').forEach(el=>el.dispatchEvent(new Event('wiz-live')));
     syncSettings(data);
+    syncDataset(data);
   }
   const signature=data=>JSON.stringify([data.store,data.inventory,data.marking,data.pickup]);
   let previous=signature(WizSim.data);
@@ -92,6 +93,7 @@
     };
   }
   syncSettings=settingsControl();
+  syncDataset=WizDataset.create(document.querySelector('.data-settings-launcher'));
   window.addEventListener('storage',e=>{if(e.key==='wiz-simulation-v1')refresh();});
   setInterval(refresh,5000);
   paint(WizSim.data);
