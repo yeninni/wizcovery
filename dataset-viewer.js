@@ -1,4 +1,4 @@
-/* Read-only presentation view of the catalog, relationship model and active snapshot. */
+/* Observed fan data and the independently generated shop demonstration snapshot. */
 const WizDataset = (() => {
   const relationNames={forPlayer:'선수',locatedIn:'위치',appliedAt:'작업 장소',compatibleWith:'호환 마킹지',hasDesign:'디자인',taggedAs:'큐레이션',supports:'수령 방법',hasVariant:'사이즈별 SKU',hasNumber:'등번호'};
   const crowdNames={closed:'영업 종료',low:'여유',medium:'보통',high:'혼잡'};
@@ -6,9 +6,11 @@ const WizDataset = (() => {
   const scenarioNames={normal:'기본 흐름',busy:'혼잡',soldout:'인기 유니폼 95 품절',restock:'16시 이후 재입고'};
   const slotReasons={available:'선택 가능',store_closed:'영업 종료',lead_time_or_cutoff:'준비시간·마감 기준',full:'정원 마감'};
   const number=value=>value.toLocaleString('ko-KR');
-  function snapshot(data){
+  function snapshot(data,preview=false){
+    const fans=WizFans.data;
     return {
-      meta:{synthetic:true,timezone:'Asia/Seoul',notice:'사진·상품명은 업로드 자료를 포함하며, 가격·재고·선수·경기·운영 값과 관계는 시연용 예시입니다.'},
+      meta:{data_kind:'mixed',timezone:'Asia/Seoul',preview,notice:'회원 자료는 업로드 원본의 집계입니다. 상품 가격·재고·경기·매장 운영과 상품 관계는 별도 시연 데이터입니다.',sources:{fan_data:'observed_aggregates',catalog:'demo_catalog',simulation:'synthetic',ontology:'demo_product_relations'}},
+      fan_data:fans?(preview?{...fans,purchase_cohorts:fans.purchase_cohorts.slice(0,20),membership_cohorts:fans.membership_cohorts.slice(0,20),preview:{limit_per_table:20,purchase_total:fans.purchase_cohorts.length,membership_total:fans.membership_cohorts.length}}:fans):null,
       settings:WizSim.read(),
       catalog:products.map(p=>({id:p.id,name:p.name,category:p.category,price:p.price,design:p.kind,player:p.player||null,map_zone:p.mapZone||null,storefront:p.storefront!==false,image:p.image||null,sizes:Object.keys(p.sizes)})),
       players:demoPlayers,
@@ -32,32 +34,36 @@ const WizDataset = (() => {
     tools.append(button,settingsButton);
     const dialog=document.createElement('dialog');dialog.id='dataset-dialog';dialog.className='dataset-dialog';
     dialog.setAttribute('aria-labelledby','dataset-title');dialog.setAttribute('aria-describedby','dataset-description');
-    dialog.innerHTML=`<div class="dataset-header"><div><span class="dataset-eyebrow">PRESENTATION DATA</span><h2 id="dataset-title">시연 데이터셋</h2></div><button type="button" class="dataset-close" aria-label="데이터셋 닫기" autofocus>×</button></div>
+    dialog.innerHTML=`<div class="dataset-header"><div><span class="dataset-eyebrow">KT WIZ · FAN DATA</span><h2 id="dataset-title">WIZCOVERY 데이터셋</h2></div><div class="dataset-header-actions"><button type="button" class="dataset-download" aria-label="전체 데이터 JSON 내려받기" disabled>JSON ↓</button><button type="button" class="dataset-close" aria-label="데이터셋 닫기" autofocus>×</button></div></div>
       <div class="dataset-body">
-        <p id="dataset-description">사진·상품명은 업로드 자료를 포함합니다. 가격·재고·선수·경기·운영 값과 관계는 시연용 예시입니다.</p>
-        <div class="dataset-context"><span class="dataset-badge">예시 데이터</span><span class="dataset-clock"></span><span class="dataset-scenario"></span></div>
+        <p id="dataset-description">업로드한 구매회원·회원구성 자료를 연도·성별·연령대·지역으로 집계했습니다. 상품·재고·매장 운영은 별도의 시연 데이터입니다.</p>
+        <div class="dataset-context"><span class="dataset-badge">실제 자료 집계</span><span class="dataset-clock"></span><span class="dataset-scenario"></span></div>
         <dl class="dataset-counts"></dl>
         <div class="dataset-tabs" role="tablist" aria-label="데이터셋 분류">
-          <button type="button" role="tab" id="dataset-tab-inventory" aria-controls="dataset-panel-inventory" aria-selected="true" data-dataset-tab="inventory">상품·재고</button>
+          <button type="button" role="tab" id="dataset-tab-purchases" aria-controls="dataset-panel-purchases" aria-selected="true" data-dataset-tab="purchases">구매회원 분석</button>
+          <button type="button" role="tab" id="dataset-tab-members" aria-controls="dataset-panel-members" aria-selected="false" tabindex="-1" data-dataset-tab="members">회원 구성</button>
+          <button type="button" role="tab" id="dataset-tab-inventory" aria-controls="dataset-panel-inventory" aria-selected="false" tabindex="-1" data-dataset-tab="inventory">상품·재고</button>
           <button type="button" role="tab" id="dataset-tab-services" aria-controls="dataset-panel-services" aria-selected="false" tabindex="-1" data-dataset-tab="services">매장·서비스</button>
           <button type="button" role="tab" id="dataset-tab-ontology" aria-controls="dataset-panel-ontology" aria-selected="false" tabindex="-1" data-dataset-tab="ontology">온톨로지</button>
           <button type="button" role="tab" id="dataset-tab-json" aria-controls="dataset-panel-json" aria-selected="false" tabindex="-1" data-dataset-tab="json">원본 JSON</button>
         </div>
-        <section class="dataset-panel" id="dataset-panel-inventory" role="tabpanel" aria-labelledby="dataset-tab-inventory">
-          <h3>상품과 사이즈별 재고</h3><p>전체 상품에는 관계 검색을 위해 만든 예시 상품도 포함됩니다. 보유 재고와 판매 가능 수량을 함께 확인하세요.</p>
+        <section class="dataset-panel" id="dataset-panel-purchases" role="tabpanel" aria-labelledby="dataset-tab-purchases"></section>
+        <section class="dataset-panel" id="dataset-panel-members" role="tabpanel" aria-labelledby="dataset-tab-members" hidden></section>
+        <section class="dataset-panel" id="dataset-panel-inventory" role="tabpanel" aria-labelledby="dataset-tab-inventory" hidden>
+          <h3>상품과 사이즈별 재고 · 시연 데이터</h3><p>사진·상품명은 업로드 자료를 포함합니다. 가격·재고는 시연용이며, 구매회원 자료에서 굿즈 취향이나 재고를 추정하지 않습니다.</p>
           <div class="dataset-filters"><label>상품 검색<input type="search" class="dataset-search" placeholder="상품명·선수·사이즈" aria-label="데이터셋 상품 검색"></label><label>상품 범위<select class="dataset-scope"><option value="all">전체 상품</option><option value="storefront">사진 상품</option><option value="example">관계 시연용 상품</option></select></label></div>
           <p class="dataset-inventory-count" role="status"></p><div class="dataset-inventory"></div>
         </section>
-        <section class="dataset-panel" id="dataset-panel-services" role="tabpanel" aria-labelledby="dataset-tab-services" hidden><h3>매장과 서비스 상태</h3><p>선택한 시각·상황으로 계산한 값입니다. 데이터 설정에서 시나리오를 바꾸면 함께 반영됩니다.</p><div class="dataset-services"></div></section>
-        <section class="dataset-panel" id="dataset-panel-ontology" role="tabpanel" aria-labelledby="dataset-tab-ontology" hidden><h3>온톨로지 관계 데이터</h3><p>상품을 선수·디자인·사이즈·위치·마킹지와 연결해 조건 검색에 사용합니다. 관계를 선택해 실제 연결 예시를 확인하세요.</p><label class="dataset-relation-label">관계 종류<select class="dataset-relation-filter"><option value="">전체 관계</option></select></label><p class="dataset-relation-count" role="status"></p><div class="dataset-relations"></div></section>
-        <section class="dataset-panel" id="dataset-panel-json" role="tabpanel" aria-labelledby="dataset-tab-json" hidden><h3>현재 데이터 원본</h3><p>상품·선수·큐레이션·온톨로지와 현재 시뮬레이션 값을 하나의 JSON으로 확인합니다.</p><pre class="dataset-json" tabindex="0" aria-label="데이터셋 원본 JSON"></pre></section>
-        <div class="dataset-footer"><span>현재 화면에 적용된 데이터 · 한국 시간</span><button type="button" class="dataset-download">JSON 내려받기 ↓</button></div>
+        <section class="dataset-panel" id="dataset-panel-services" role="tabpanel" aria-labelledby="dataset-tab-services" hidden><h3>매장과 서비스 상태 · 시연 데이터</h3><p>데이터 설정에서 선택한 시각·상황으로 계산한 값입니다. 실제 회원 집계는 이 설정으로 바뀌지 않습니다.</p><div class="dataset-services"></div></section>
+        <section class="dataset-panel" id="dataset-panel-ontology" role="tabpanel" aria-labelledby="dataset-tab-ontology" hidden><h3>상품 온톨로지 · 시연 관계</h3><p>상품을 선수·디자인·사이즈·위치·마킹지와 연결해 조건 검색에 사용합니다. 구매회원의 성별·연령·지역에서 상품 취향을 추정한 관계가 아닙니다.</p><label class="dataset-relation-label">관계 종류<select class="dataset-relation-filter"><option value="">전체 관계</option></select></label><p class="dataset-relation-count" role="status"></p><div class="dataset-relations"></div></section>
+        <section class="dataset-panel" id="dataset-panel-json" role="tabpanel" aria-labelledby="dataset-tab-json" hidden><h3>가공 데이터 JSON 미리보기</h3><p>회원 집계 표는 각각 앞 20개 집단을 미리 보여줍니다. 위의 JSON 버튼으로 전체 회원 집계와 상품·시뮬레이션을 내려받을 수 있습니다. 출처는 meta.sources에서 구분합니다.</p><pre class="dataset-json" tabindex="0" aria-label="데이터셋 원본 JSON"></pre></section>
+        <div class="dataset-footer"><span>회원 자료: 업로드 원본 집계 · 상품·매장: 독립 시연 데이터</span></div>
       </div>`;
     document.body.append(dialog);
     const find=selector=>dialog.querySelector(selector);
     const tabs=[...dialog.querySelectorAll('[data-dataset-tab]')];
     const search=find('.dataset-search'),scope=find('.dataset-scope'),relationFilter=find('.dataset-relation-filter');
-    let active='inventory',data=WizSim.data,renderedSnapshot='';
+    let active='purchases',data=WizSim.data,renderedSnapshot='';
     function table(target,label,headers,rows){
       const wrap=document.createElement('div');wrap.className='dataset-table-wrap';wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label',label);
       const table=document.createElement('table'),caption=document.createElement('caption');caption.textContent=label;table.append(caption);
@@ -68,6 +74,7 @@ const WizDataset = (() => {
       table.append(body);wrap.append(table);target.replaceChildren(wrap);
       if(!rows.length){const empty=document.createElement('p');empty.textContent='조건에 맞는 데이터가 없습니다.';target.append(empty);}
     }
+    const fanUI=WizFans.create({purchasePanel:find('#dataset-panel-purchases'),memberPanel:find('#dataset-panel-members'),table,onReady:()=>render()});
     function inventory(){
       const terms=search.value.trim().toLowerCase().split(/\s+/).filter(Boolean),rows=[],ids=new Set();
       for(const item of data.inventory){
@@ -104,14 +111,17 @@ const WizDataset = (() => {
     function render(){
       if(!dialog.open)return;
       const positions=[...dialog.querySelectorAll('.dataset-panel:not([hidden]) .dataset-table-wrap')].map(wrap=>wrap.scrollLeft);
-      find('.dataset-clock').textContent=data.meta.simulation_time.slice(0,16).replace('T',' ')+' · 한국';
-      find('.dataset-scenario').textContent=(data.store.open?'영업 중':'영업 종료')+' · '+scenarioNames[data.meta.scenario]+' · 시드 '+data.meta.seed;
-      const counts=[['상품',products.length+'종'],['사이즈별 재고',data.inventory.reduce((sum,p)=>sum+p.variants.length,0)+'건'],['선수 예시',demoPlayers.length+'명'],['온톨로지 관계',WizKnowledge.edges.length+'건']];
+      const fans=WizFans.data,observed=['purchases','members','json'].includes(active);
+      find('.dataset-badge').textContent=observed?'실제 자료 집계':'상품·매장 시연';
+      find('.dataset-clock').textContent=observed?'구매회원 2017–2025 · 제공 7개 연도':data.meta.simulation_time.slice(0,16).replace('T',' ')+' · 한국';
+      find('.dataset-scenario').textContent=observed?'2020·2021 자료 없음 · 회원 구성 기준 연도 미제공':(data.store.open?'영업 중':'영업 종료')+' · '+scenarioNames[data.meta.scenario]+' · 시드 '+data.meta.seed;
+      const counts=[['제공 연도',fans?fans.meta.purchase_years.length+'개':'—'],['누적 구매회원 관측',fans?number(fans.meta.purchase_observations)+'건':'—'],['회원 구성 관측',fans?number(fans.meta.membership_observations)+'건':'—'],['연도별 구매 집단',fans?number(fans.purchase_cohorts.length)+'개':'—']];
       find('.dataset-counts').replaceChildren(...counts.map(([label,value])=>{const box=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;box.append(dt,dd);return box;}));
+      find('.dataset-download').disabled=!fans;
       if(active==='inventory')inventory();
       if(active==='services')services();
       if(active==='ontology')ontology();
-      if(active==='json')find('.dataset-json').textContent=JSON.stringify(snapshot(data),null,2);
+      if(active==='json')find('.dataset-json').textContent=fans?JSON.stringify(snapshot(data,true),null,2):'회원 집계 자료를 불러오는 중입니다. 구매회원 분석 탭에서 다시 불러올 수 있습니다.';
       dialog.querySelectorAll('.dataset-panel:not([hidden]) .dataset-table-wrap').forEach((wrap,i)=>wrap.scrollLeft=positions[i]||0);
       renderedSnapshot=JSON.stringify(data);
     }
@@ -127,7 +137,7 @@ const WizDataset = (() => {
       if(next===undefined)return;event.preventDefault();activate(tabs[next]);tabs[next].focus();
     };
     search.oninput=inventory;scope.onchange=inventory;relationFilter.onchange=ontology;
-    button.onclick=()=>{if(dialog.open){dialog.close();return;}data=WizSim.data;dialog.showModal();button.setAttribute('aria-expanded','true');render();};
+    button.onclick=()=>{if(dialog.open){dialog.close();return;}data=WizSim.data;dialog.showModal();button.setAttribute('aria-expanded','true');render();fanUI.ensure();};
     find('.dataset-close').onclick=()=>dialog.close();
     dialog.addEventListener('close',()=>button.setAttribute('aria-expanded','false'));
     dialog.addEventListener('click',event=>{if(event.target===dialog){const rect=dialog.getBoundingClientRect();if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();}});
