@@ -52,7 +52,7 @@ test('dataset toggle presents and exports the active data without changing the d
     await page.getByRole('tab',{name:'원본 JSON'}).click();
     let exported=JSON.parse(await page.locator('.dataset-json').textContent());
     assert.equal(exported.catalog.length,counts.products);assert.equal(exported.ontology.edges.length,counts.edges);
-    assert.equal(exported.players.length,3);assert.equal(exported.curation.length,3);
+    assert.equal(exported.players.length,90);assert.equal(exported.curation.length,3);
     assert.deepEqual(exported.simulation,await page.evaluate(()=>WizSim.data));
     assert.equal(await page.evaluate(()=>JSON.stringify({settings:WizSim.read(),data:WizSim.data,products})),before,'viewing the dataset must not change settings, inventory or selected sizes');
     const downloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'JSON 내려받기'}).click();

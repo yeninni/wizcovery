@@ -1,7 +1,7 @@
 /* 관계 데이터와 추론 규칙. 재고는 catalog.js의 동일 SKU 데이터를 참조한다. */
 const WizKnowledge = (() => {
   const nodes = [
-    ...demoPlayers.map(p=>({...p,type:'Player',evidence:'demo'})),
+    ...WizRoster.players.map(p=>({...p,type:'Player',evidence:'published_roster_snapshot'})),
     ...demoCuration.map(t=>({id:t.id,name:t.name,type:'CurationTag',description:t.description})),
     {id:'zone:uniform',type:'Zone',name:'유니폼 진열대'},
     {id:'zone:collab',type:'Zone',name:'콜라보 제품'},
@@ -19,9 +19,9 @@ const WizKnowledge = (() => {
   ];
   products.forEach(p=>{
     const id='product:'+p.id;
-    nodes.push({id,type:'Product',name:p.name,source:p});
-    const player=demoPlayers.find(n=>n.name===p.player);if(player)edges.push({from:id,rel:'forPlayer',to:player.id});
-    const style=p.kind;if(['home','away','sunday'].includes(style)){if(!nodes.some(n=>n.id==='design:'+style))nodes.push({id:'design:'+style,type:'Design',name:{home:'홈',away:'어웨이',sunday:'선데이'}[style]});edges.push({from:id,rel:'hasDesign',to:'design:'+style});}
+    nodes.push({id,type:'Product',name:p.name,source:p,archived:!!p.archived});
+    const player=WizRoster.players.find(n=>n.name===p.player);if(player&&!p.archived)edges.push({from:id,rel:'forPlayer',to:player.id});
+    const style=p.design||p.kind;if(['home','away','sunday'].includes(style)){if(!nodes.some(n=>n.id==='design:'+style))nodes.push({id:'design:'+style,type:'Design',name:{home:'홈',away:'어웨이',sunday:'선데이'}[style]});edges.push({from:id,rel:'hasDesign',to:'design:'+style});}
     demoCuration.filter(t=>t.products.includes(p.id)).forEach(t=>edges.push({from:id,rel:'taggedAs',to:t.id}));
     if(p.mapZone)edges.push({from:id,rel:'locatedIn',to:'zone:'+p.mapZone});
     if(!p.name.includes('마킹'))edges.push({from:id,rel:'supports',to:'service:pickup',evidence:'demo'});
@@ -29,30 +29,33 @@ const WizKnowledge = (() => {
       const sku=id+':'+size;nodes.push({id:sku,type:'SKU',name:size,stock});edges.push({from:id,rel:'hasVariant',to:sku});
     }
   });
-  demoPlayers.forEach(p=>{nodes.push({id:'number:'+p.id,type:'JerseyNumber',name:p.number,evidence:'demo'});edges.push({from:p.id,rel:'hasNumber',to:'number:'+p.id,evidence:'demo'});});
+  WizRoster.players.filter(p=>p.number!==null).forEach(p=>{nodes.push({id:'number:'+p.id,type:'JerseyNumber',name:p.number,evidence:'published_roster_snapshot'});edges.push({from:p.id,rel:'hasNumber',to:'number:'+p.id,evidence:'published_roster_snapshot'});});
   const get=id=>nodes.find(n=>n.id===id);
   const related=(id,rel)=>edges.filter(e=>e.from===id&&e.rel===rel).map(e=>get(e.to));
   function parse(raw){
     const q=raw.trim();const size=q.match(/(?:^|\D)(90|95|100|105)(?!\d)/)?.[1]||'';
+    const player=WizRoster.findInText(q);
+    let remaining=q;if(player)for(const name of [player.name,...player.aliases].sort((a,b)=>b.length-a.length))remaining=remaining.split(name).join('');
     let budget='';const won=q.match(/(\d+(?:\.\d+)?)\s*만\s*원/);const plain=q.match(/(\d[\d,]*)\s*원/);
     if(won)budget=String(Number(won[1])*10000);else if(plain)budget=String(Number(plain[1].replaceAll(',','')));
-    const kind=/타월|타올/.test(q)?'응원용품':/유니폼/.test(q)?'유니폼':/모자|볼캡/.test(q)?'모자':/키링/.test(q)?'액세서리':'';
+    const kind=/마킹키트|마킹지/.test(q)?'마킹키트':/타월|타올/.test(q)?'응원용품':/유니폼/.test(q)?'유니폼':/모자|볼캡/.test(q)?'모자':/키링/.test(q)?'액세서리':'';
     const keywords=['수원','콜라보','키링','볼캡'].filter(k=>q.includes(k));
     const tag=/입문자|풀세트/.test(q)?'tag:starter':/원정.*패키지/.test(q)?'tag:away':/여름|쿨링/.test(q)?'tag:summer':'';
-    const supported=!q||!!(size||budget||kind||keywords.length||/최원준|고영표|강백호|마킹|픽업|홈|어웨이|원정|응원|굿즈|선데이|입문자|풀세트|패키지|여름|쿨링/.test(q));
-    const residue=q.replace(/입문자용|입문자|풀세트|패키지|원정 응원용|여름 시즌|여름|쿨링|선데이|고영표|강백호|최원준|마킹|픽업|유니폼|타월|타올|모자|볼캡|키링|수원|콜라보|어웨이|원정|홈|응원|굿즈|오늘|경기장|구장|사이즈|이하|미만|미리|사고|싶어|싶다|찾아줘|찾고|추천|가능한|가능|하고|할|에서|받을|받고|있는|해줘|주세요|으로|까지|짜리|원|만|\d|[\s,.?!]/g,'').replace(/^[은는이가을를의와과도]+$/,'');
-    return {size,budget,kind,player:demoPlayers.find(p=>q.includes(p.name))?.id||'',tag,marking:q.includes('마킹'),pickup:q.includes('픽업'),style:tag==='tag:away'?'':q.includes('선데이')?'sunday':/어웨이|원정/.test(q)?'away':q.includes('홈')?'home':'',keywords,exclusive:q.includes('미만'),supported:supported&&!residue,unknown:residue};
+    const supported=!q||!!(player||size||budget||kind||keywords.length||/마킹|픽업|홈|어웨이|원정|응원|굿즈|선데이|입문자|풀세트|패키지|여름|쿨링/.test(q));
+    const residue=remaining.replace(/입문자용|입문자|풀세트|패키지|원정 응원용|여름 시즌|여름|쿨링|선데이|마킹키트|마킹지|마킹|픽업|유니폼|타월|타올|모자|볼캡|키링|수원|콜라보|어웨이|원정|홈|응원|굿즈|오늘|경기장|구장|사이즈|선수|이하|미만|미리|사고|싶어|싶다|찾아줘|찾고|추천|가능한|가능|하고|할|에서|받을|받고|있는|해줘|주세요|으로|까지|짜리|원|만|\d|[\s,.?!]/g,'').replace(/^[은는이가을를의와과도]+$/,'');
+    return {size,budget,kind,player:player?.id||'',tag,marking:kind!=='마킹키트'&&q.includes('마킹'),pickup:q.includes('픽업'),style:tag==='tag:away'?'':q.includes('선데이')?'sunday':/어웨이|원정/.test(q)?'away':q.includes('홈')?'home':'',keywords,exclusive:q.includes('미만'),supported:supported&&!residue,unknown:residue};
   }
   function search(f){
     const results=[];const blocked=[];
     if(f.supported===false)return {results,blocked};
     for(const p of products){
+      if(p.archived)continue;
       const id='product:'+p.id,kit=related(id,'compatibleWith')[0];
       const directPlayer=related(id,'forPlayer').some(n=>n.id===f.player);
       const kitPlayer=kit&&related(kit.id,'forPlayer').some(n=>n.id===f.player);
       if(f.tag&&!related(id,'taggedAs').some(n=>n.id===f.tag))continue;
       if(f.kind&&p.category!==f.kind)continue;
-      if(f.style&&p.kind!==f.style)continue;
+      if(f.style&&(p.design||p.kind)!==f.style)continue;
       if(f.keywords?.some(k=>!p.name.includes(k)))continue;
       if(f.player&&!directPlayer&&!(f.marking&&kitPlayer))continue;
       const premarked=p.category==='유니폼'&&p.name.includes('마킹');
@@ -84,5 +87,6 @@ const WizKnowledge = (() => {
     const same=search({...f,size:''}).results.filter(r=>blocked.some(b=>b.p.id===r.p.id)&&r.size!==f.size);
     return same.slice(0,4).map(r=>({...r,difference:f.size+' → '+r.size+' 사이즈 변경. 착용감이 다르므로 사이즈 확인 필요'}));
   }
-  return {nodes,edges,get,related,parse,search,alternatives};
+  function hasPlayerProducts(playerId){return products.some(p=>!p.archived&&(related('product:'+p.id,'forPlayer').some(player=>player.id===playerId)||related('product:'+p.id,'compatibleWith').some(kit=>related(kit.id,'forPlayer').some(player=>player.id===playerId))));}
+  return {nodes,edges,get,related,parse,search,alternatives,hasPlayerProducts};
 })();

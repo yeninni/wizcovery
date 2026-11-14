@@ -9,11 +9,12 @@ const WizDataset = (() => {
   function snapshot(data,preview=false){
     const fans=WizFans.data;
     return {
-      meta:{data_kind:'mixed',timezone:'Asia/Seoul',preview,notice:'회원 자료는 업로드 원본의 집계입니다. 상품 가격과 재고, 경기, 매장 운영, 상품 관계는 시연용입니다.',sources:{fan_data:'observed_aggregates',catalog:'demo_catalog',simulation:'synthetic',ontology:'demo_product_relations'}},
+      meta:{data_kind:'mixed',timezone:'Asia/Seoul',preview,notice:'회원 자료는 업로드 원본의 집계입니다. 선수 명단은 공개 저장본으로 확인했습니다. 상품 가격과 재고, 경기, 매장 운영, 상품 관계는 시연용입니다.',sources:{fan_data:'observed_aggregates',players:'published_roster_snapshot',catalog:'demo_catalog',simulation:'synthetic',ontology:'roster_entities_and_demo_product_relations'}},
       fan_data:fans?(preview?{...fans,purchase_cohorts:fans.purchase_cohorts.slice(0,20),membership_cohorts:fans.membership_cohorts.slice(0,20),preview:{limit_per_table:20,purchase_total:fans.purchase_cohorts.length,membership_total:fans.membership_cohorts.length}}:fans):null,
       settings:WizSim.read(),
-      catalog:products.map(p=>({id:p.id,name:p.name,category:p.category,price:p.price,design:p.kind,player:p.player||null,map_zone:p.mapZone||null,storefront:p.storefront!==false,image:p.image||null,sizes:Object.keys(p.sizes)})),
-      players:demoPlayers,
+      catalog:products.map(p=>({id:p.id,name:p.name,category:p.category,price:p.price,design:p.design||p.kind,player:p.player||null,archived:!!p.archived,map_zone:p.mapZone||null,storefront:p.storefront!==false,image:p.image||null,sizes:Object.keys(p.sizes)})),
+      players:WizRoster.players,
+      player_roster:WizRoster.meta,
       curation:demoCuration,
       ontology:{nodes:WizKnowledge.nodes.map(node=>{
         const {source,stock,...fields}=node;
@@ -55,7 +56,7 @@ const WizDataset = (() => {
           <p class="dataset-inventory-count" role="status"></p><div class="dataset-inventory"></div>
         </section>
         <section class="dataset-panel" id="dataset-panel-services" role="tabpanel" aria-labelledby="dataset-tab-services" hidden><h3>매장과 서비스 상태 (시연용)</h3><p>데이터 설정에서 선택한 시각과 상황으로 계산한 값입니다. 실제 회원 집계는 이 설정으로 바뀌지 않습니다.</p><div class="dataset-services"></div></section>
-        <section class="dataset-panel" id="dataset-panel-ontology" role="tabpanel" aria-labelledby="dataset-tab-ontology" hidden><h3>상품 온톨로지 (시연용 관계)</h3><p>상품을 선수, 디자인, 사이즈, 위치, 마킹지와 연결해 조건 검색에 사용합니다. 구매회원의 성별, 연령, 지역에서 상품 취향을 추정한 관계가 아닙니다.</p><label class="dataset-relation-label">관계 종류<select class="dataset-relation-filter"><option value="">전체 관계</option></select></label><p class="dataset-relation-count" role="status"></p><div class="dataset-relations"></div></section>
+        <section class="dataset-panel" id="dataset-panel-ontology" role="tabpanel" aria-labelledby="dataset-tab-ontology" hidden><h3>상품 온톨로지와 선수 명단</h3><p>선수 명단은 공개 자료를 기준으로 제공합니다. 상품과 선수, 디자인, 사이즈, 위치, 마킹지를 연결한 시연 관계를 조건 검색에 사용합니다. 구매회원의 성별, 연령, 지역에서 상품 취향을 추정한 관계가 아닙니다.</p><label class="dataset-relation-label">관계 종류<select class="dataset-relation-filter"><option value="">전체 관계</option></select></label><p class="dataset-relation-count" role="status"></p><div class="dataset-relations"></div></section>
         <section class="dataset-panel" id="dataset-panel-json" role="tabpanel" aria-labelledby="dataset-tab-json" hidden><h3>가공 데이터 JSON 미리보기</h3><p>회원 집계 표는 각각 앞 20개 집단을 미리 보여줍니다. 위의 JSON 버튼으로 전체 회원 집계, 상품 정보와 시뮬레이션 값을 내려받을 수 있습니다. 출처는 meta.sources에서 구분합니다.</p><pre class="dataset-json" tabindex="0" aria-label="데이터셋 원본 JSON"></pre></section>
         <div class="dataset-footer"><span>회원 자료는 업로드 원본을 집계했고, 상품과 매장은 시연 데이터입니다.</span></div>
       </div>`;
@@ -82,7 +83,7 @@ const WizDataset = (() => {
         if(scope.value==='storefront'&&!shown||scope.value==='example'&&shown)continue;
         for(const variant of item.variants){
           if(!terms.every(t=>(item.name+' '+(product.player||'')+' '+variant.size).toLowerCase().includes(t)))continue;
-          ids.add(item.id);rows.push([[item.name,'#'+item.id+' '+(shown?'사진 상품':'관계 시연용')],variant.size,number(item.price)+'원',variant.opening_stock,variant.on_hand,variant.available,stockNames[variant.status]]);
+          ids.add(item.id);rows.push([[item.name,'#'+item.id+' '+(product.archived?'이전 시연용':shown?'사진 상품':'관계 시연용')],variant.size,number(item.price)+'원',variant.opening_stock,variant.on_hand,variant.available,stockNames[variant.status]]);
         }
       }
       find('.dataset-inventory-count').textContent='상품 '+ids.size+'종, 사이즈별 재고 '+rows.length+'건';
