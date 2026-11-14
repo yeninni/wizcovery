@@ -1,11 +1,11 @@
-// 시안용 공통 상품 데이터. 실제 상품·가격·재고와 다릅니다.
+// 시안용 공통 상품 데이터. 실제 상품, 가격과 재고와 다릅니다.
 const products=[{id:1,name:'2026 홈 마킹 유니폼',player:'최원준',category:'유니폼',price:119000,zone:'B',kind:'home',tag:'FAN FAVORITE',sizes:{90:8,95:4,100:12,105:6},selected:'95'},{id:2,name:'2026 어웨이 마킹 유니폼',player:'최원준',category:'유니폼',price:119000,zone:'B',kind:'away',tag:'AWAY EDITION',sizes:{90:3,95:0,100:7,105:4},selected:'95'},{id:3,name:'위즈 클래식 볼캡',category:'모자',price:35000,zone:'A',kind:'cap',tag:'BEST PICK',sizes:{FREE:16},selected:'FREE'},{id:4,name:'2026 홈 레플리카 유니폼',category:'유니폼',price:89000,zone:'B',kind:'home',tag:'ESSENTIAL',sizes:{90:5,95:9,100:14,105:8},selected:'95'},{id:5,name:'위즈 응원 타월',category:'응원용품',price:15000,zone:'C',kind:'towel',tag:'CHEER TOGETHER',sizes:{FREE:24},selected:'FREE'},{id:6,name:'위즈 유니폼 키링',category:'액세서리',price:12000,zone:'D',kind:'key',tag:'LITTLE WIZ',sizes:{FREE:0},selected:'FREE'}];
 products.push({id:7,name:'수원 콜라보 굿즈 세트',category:'액세서리',price:22000,zone:'입구 앞',mapZone:'collab',kind:'key',tag:'SUWON COLLAB',sizes:{FREE:8},selected:'FREE'},{id:8,name:'콜라보 팝업 유니폼',category:'유니폼',price:129000,zone:'오른쪽 팝업',mapZone:'collab',kind:'away',tag:'COLLAB POP-UP',sizes:{90:3,95:4,100:0,105:6},selected:'95'});
 
 // 제공된 최신 배치도 기준. 응원타월의 정확한 위치는 미확인.
 products.forEach(p=>{p.mapZone=p.category==='유니폼'?'uniform':null;if([7,8].includes(p.id))p.mapZone='collab';});
 
-// 선수와 신규 상품은 관계망 시연용입니다. 실제 소속·등번호·판매 상품을 의미하지 않습니다.
+// 선수와 신규 상품은 관계망 시연용입니다. 실제 소속, 등번호, 판매 상품을 의미하지 않습니다.
 const demoPlayers=[
   {id:'player:choi',name:'최원준',number:'53'},
   {id:'player:ko',name:'고영표',number:'1'},
@@ -41,9 +41,9 @@ const uploadedGoods=[
   {id:596,name:'빅 인형 크로스백',category:'액세서리',price:29000,kind:'bag',image:'596-vic-plush-crossbody.jpg'},
   {id:598,name:'로고 에코백',category:'액세서리',price:22000,kind:'bag',image:'598-logo-eco-bag.jpg'},
   {id:599,name:'로고프린트 3단 우산',category:'액세서리',price:24000,kind:'umbrella',image:'599-logo-folding-umbrella.jpg'},
-  {id:584,name:'어웨이 마킹키트 · 장성우 22',category:'마킹키트',price:20000,kind:'marking-kit',image:'584-away-marking-kit.jpg'},
-  {id:585,name:'핑크 클라우드 마킹키트 · 장성우 22',category:'마킹키트',price:22000,kind:'marking-kit',image:'585-pink-cloud-marking-kit.jpg'},
-  {id:593,name:'빅또리 빅토리 마킹키트 · 장성우 22',category:'마킹키트',price:20000,kind:'marking-kit',image:'593-bigttori-victory-marking-kit.jpg'}
+  {id:584,name:'어웨이 마킹키트 장성우 22',category:'마킹키트',price:20000,kind:'marking-kit',image:'584-away-marking-kit.jpg'},
+  {id:585,name:'핑크 클라우드 마킹키트 장성우 22',category:'마킹키트',price:22000,kind:'marking-kit',image:'585-pink-cloud-marking-kit.jpg'},
+  {id:593,name:'빅또리 빅토리 마킹키트 장성우 22',category:'마킹키트',price:20000,kind:'marking-kit',image:'593-bigttori-victory-marking-kit.jpg'}
 ];
 // Photos and product names come from the uploads. Prices, stock and sizes remain
 // presentation data, using the same browser simulator as the existing catalog.

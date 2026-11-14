@@ -65,14 +65,14 @@ const WizKnowledge = (() => {
       for(const size of sizes){
         if(!Object.hasOwn(p.sizes,size))continue;
         if(p.sizes[size]===0||(extra&&extra.stock===0)){blocked.push({p,size,reason:p.sizes[size]===0?'선택 사이즈 품절':'마킹지 품절'});continue;}
-        const relations=[{from:p.name,rel:'사이즈별 재고',to:size+' · '+p.sizes[size]+'개'}];
+        const relations=[{from:p.name,rel:'사이즈별 재고',to:size+' '+p.sizes[size]+'개'}];
         const reasons=['공통 상품 데이터에서 '+size+' 사이즈 재고 '+p.sizes[size]+'개 확인'];
         if(f.player){relations.push({from:extra?extra.name:p.name,rel:'관련 선수',to:get(f.player).name});reasons.push(extra?get(f.player).name+' 마킹지와 연결 가능한 조합':get(f.player).name+' 선수 상품');}
-        if(extra){relations.push({from:p.name,rel:'호환 마킹지',to:extra.name},{from:extra.name,rel:'작업 장소',to:'매장 밖 마킹 공간'});reasons.push('유니폼 + 마킹지 합계 '+total.toLocaleString('ko-KR')+'원 · 작업비 별도 확인');}
-        else if(f.marking&&premarked)reasons.push('마킹이 포함된 상품 · 추가 마킹 작업 불필요');
-        if(f.tag){relations.push({from:p.name,rel:'상황별 구성 후보',to:get(f.tag).name});reasons.push(get(f.tag).name+' 태그로 연결된 개별 상품 · 완성 패키지 아님');}
+        if(extra){relations.push({from:p.name,rel:'호환 마킹지',to:extra.name},{from:extra.name,rel:'작업 장소',to:'매장 밖 마킹 공간'});reasons.push('유니폼 + 마킹지 합계 '+total.toLocaleString('ko-KR')+'원 작업비 별도 확인');}
+        else if(f.marking&&premarked)reasons.push('마킹이 포함된 상품 추가 마킹 작업 불필요');
+        if(f.tag){relations.push({from:p.name,rel:'상황별 구성 후보',to:get(f.tag).name});reasons.push(get(f.tag).name+' 태그로 연결된 개별 상품 완성 패키지 아님');}
         if(f.budget)reasons.push('상품 합계가 예산 '+Number(f.budget).toLocaleString('ko-KR')+'원 '+(f.exclusive?'미만':'이하'));
-        if(f.pickup){relations.push({from:p.name,rel:'수령 방법',to:'위즈픽업'});reasons.push('추가 마킹 작업이 없는 픽업 대상 · 시간대 선택 필요');}
+        if(f.pickup){relations.push({from:p.name,rel:'수령 방법',to:'위즈픽업'});reasons.push('추가 마킹 작업이 없는 픽업 대상 시간대 선택 필요');}
         const zone=related(id,'locatedIn')[0];if(zone)relations.push({from:p.name,rel:'위치',to:zone.name});
         results.push({p,size,extra,total,reasons,relations,pickup:!premarked&&!extra});
       }

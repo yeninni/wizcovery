@@ -30,7 +30,7 @@ test('dataset toggle presents and exports the active data without changing the d
     assert.equal(await page.locator('.dataset-counts dd').nth(1).innerText(),'340,910건');
     assert.equal(await page.locator('.dataset-counts dd').nth(2).innerText(),'664,023건');
     assert.equal(await page.locator('.dataset-counts dd').nth(3).innerText(),'3,931개');
-    await page.getByRole('tab',{name:'상품·재고',exact:true}).click();
+    await page.getByRole('tab',{name:'상품 재고',exact:true}).click();
     const counts=await page.evaluate(()=>({products:products.length,skus:WizSim.data.inventory.reduce((n,p)=>n+p.variants.length,0),edges:WizKnowledge.edges.length}));
     assert.equal(await page.locator('.dataset-inventory tbody tr').count(),counts.skus);
     await page.locator('.dataset-scope').selectOption('storefront');
@@ -41,7 +41,7 @@ test('dataset toggle presents and exports the active data without changing the d
     await page.locator('.dataset-search').fill('');await page.locator('.dataset-scope').selectOption('example');
     assert.match(await page.locator('.dataset-inventory-count').innerText(),/상품 11종/);
 
-    await page.getByRole('tab',{name:'매장·서비스'}).click();
+    await page.getByRole('tab',{name:'매장 서비스'}).click();
     assert.match(await page.locator('.dataset-services').innerText(),/영업 중/);
     const slotTable=page.getByRole('table',{name:'픽업 시간대',exact:true});
     assert.equal(await slotTable.locator('tbody tr').count(),await page.evaluate(()=>WizSim.data.pickup.slots.length));
@@ -76,7 +76,7 @@ test('dataset toggle presents and exports the active data without changing the d
       const upper=await toggle.boundingBox(),lower=await settings.boundingBox();
       assert.ok(upper.y+upper.height<lower.y,'dataset is stacked above settings');assert.ok(upper.x>=0&&upper.x+upper.width<=width);
       await toggle.click();
-      for(const tab of ['구매회원 분석','회원 구성','상품·재고','매장·서비스','온톨로지','원본 JSON']){
+      for(const tab of ['구매회원 분석','회원 구성','상품 재고','매장 서비스','온톨로지','원본 JSON']){
         await page.getByRole('tab',{name:tab,exact:true}).click();
         const bounds=await dialog.boundingBox();assert.ok(bounds.x>=0&&bounds.x+bounds.width<=width+1);
         assert.equal(await dialog.evaluate(e=>e.scrollWidth>e.clientWidth),false,'dialog overflow at '+width+' / '+tab);
@@ -97,7 +97,7 @@ test('dataset toggle presents and exports the active data without changing the d
     }
 
     // Updates received from another page are reflected while the dataset stays open.
-    await page.setViewportSize({width:390,height:844});await page.getByRole('tab',{name:'상품·재고'}).click();
+    await page.setViewportSize({width:390,height:844});await page.getByRole('tab',{name:'상품 재고'}).click();
     const inventoryScroll=page.locator('.dataset-inventory .dataset-table-wrap');
     await inventoryScroll.evaluate(e=>e.scrollLeft=70);
     const second=await context.newPage();await second.goto(base);

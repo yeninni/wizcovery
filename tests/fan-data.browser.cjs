@@ -51,7 +51,7 @@ test('uploaded member data is the default dataset, with independent filters, dow
   await mobile.goto(base+'store-map.html');await mobile.getByRole('button',{name:'데이터셋',exact:true}).tap();
   const retry=mobile.locator('#dataset-panel-purchases .fan-retry');await retry.waitFor({state:'visible'});
   assert.equal(await mobile.getByRole('button',{name:'전체 데이터 JSON 내려받기'}).isDisabled(),true);await retry.tap();await mobile.waitForFunction(()=>WizFans.data!==null);assert.equal(attempts,2);
-  for(const name of ['구매회원 분석','회원 구성','상품·재고','원본 JSON']){
+  for(const name of ['구매회원 분석','회원 구성','상품 재고','원본 JSON']){
    await mobile.getByRole('tab',{name,exact:true}).tap();assert.equal(await mobile.locator('#dataset-dialog').evaluate(e=>e.scrollWidth>e.clientWidth),false,name+' stays in the phone dialog');
   }
   await mobile.getByRole('tab',{name:'구매회원 분석',exact:true}).tap();

@@ -50,7 +50,7 @@
           <button type="button" data-preset="open">영업 중</button><button type="button" data-preset="busy">경기 전 혼잡</button>
           <button type="button" data-preset="soldout">인기 95 품절</button><button type="button" data-preset="closed">영업 종료</button>
         </div>
-        <label for="data-settings-at">기준 날짜·시간 <span>한국 시간</span></label>
+        <label for="data-settings-at">기준 날짜와 시간 <span>한국 시간</span></label>
         <input type="datetime-local" id="data-settings-at" required>
         <label for="data-settings-scenario">매장 상황</label>
         <select id="data-settings-scenario"><option value="normal">기본 흐름</option><option value="busy">혼잡</option><option value="soldout">인기 유니폼 95 품절</option><option value="restock">16시 이후 재입고</option></select>
@@ -89,7 +89,7 @@
     return data=>{
       const settings=WizSim.read(),active=settings.mode==='fixed'||settings.scenario!=='normal';
       button.dataset.active=String(active);
-      button.title=(settings.mode==='fixed'?'지정 시각':'현재 시각')+' · '+data.meta.simulation_time.slice(0,16).replace('T',' ')+' (한국)';
+      button.title=(settings.mode==='fixed'?'지정 시각':'현재 시각')+' '+data.meta.simulation_time.slice(0,16).replace('T',' ')+' (한국)';
     };
   }
   syncSettings=settingsControl();

@@ -4,12 +4,12 @@ const WizDataset = (() => {
   const crowdNames={closed:'영업 종료',low:'여유',medium:'보통',high:'혼잡'};
   const stockNames={unavailable:'영업 종료',sold_out:'품절',low_stock:'품절 임박',in_stock:'구매 가능'};
   const scenarioNames={normal:'기본 흐름',busy:'혼잡',soldout:'인기 유니폼 95 품절',restock:'16시 이후 재입고'};
-  const slotReasons={available:'선택 가능',store_closed:'영업 종료',lead_time_or_cutoff:'준비시간·마감 기준',full:'정원 마감'};
+  const slotReasons={available:'선택 가능',store_closed:'영업 종료',lead_time_or_cutoff:'준비시간과 마감 기준',full:'정원 마감'};
   const number=value=>value.toLocaleString('ko-KR');
   function snapshot(data,preview=false){
     const fans=WizFans.data;
     return {
-      meta:{data_kind:'mixed',timezone:'Asia/Seoul',preview,notice:'회원 자료는 업로드 원본의 집계입니다. 상품 가격·재고·경기·매장 운영과 상품 관계는 별도 시연 데이터입니다.',sources:{fan_data:'observed_aggregates',catalog:'demo_catalog',simulation:'synthetic',ontology:'demo_product_relations'}},
+      meta:{data_kind:'mixed',timezone:'Asia/Seoul',preview,notice:'회원 자료는 업로드 원본의 집계입니다. 상품 가격과 재고, 경기, 매장 운영, 상품 관계는 시연용입니다.',sources:{fan_data:'observed_aggregates',catalog:'demo_catalog',simulation:'synthetic',ontology:'demo_product_relations'}},
       fan_data:fans?(preview?{...fans,purchase_cohorts:fans.purchase_cohorts.slice(0,20),membership_cohorts:fans.membership_cohorts.slice(0,20),preview:{limit_per_table:20,purchase_total:fans.purchase_cohorts.length,membership_total:fans.membership_cohorts.length}}:fans):null,
       settings:WizSim.read(),
       catalog:products.map(p=>({id:p.id,name:p.name,category:p.category,price:p.price,design:p.kind,player:p.player||null,map_zone:p.mapZone||null,storefront:p.storefront!==false,image:p.image||null,sizes:Object.keys(p.sizes)})),
@@ -34,30 +34,30 @@ const WizDataset = (() => {
     tools.append(button,settingsButton);
     const dialog=document.createElement('dialog');dialog.id='dataset-dialog';dialog.className='dataset-dialog';
     dialog.setAttribute('aria-labelledby','dataset-title');dialog.setAttribute('aria-describedby','dataset-description');
-    dialog.innerHTML=`<div class="dataset-header"><div><span class="dataset-eyebrow">KT WIZ · FAN DATA</span><h2 id="dataset-title">WIZCOVERY 데이터셋</h2></div><div class="dataset-header-actions"><button type="button" class="dataset-download" aria-label="전체 데이터 JSON 내려받기" disabled>JSON ↓</button><button type="button" class="dataset-close" aria-label="데이터셋 닫기" autofocus>×</button></div></div>
+    dialog.innerHTML=`<div class="dataset-header"><div><span class="dataset-eyebrow">KT WIZ FAN DATA</span><h2 id="dataset-title">WIZCOVERY 데이터셋</h2></div><div class="dataset-header-actions"><button type="button" class="dataset-download" aria-label="전체 데이터 JSON 내려받기" disabled>JSON ↓</button><button type="button" class="dataset-close" aria-label="데이터셋 닫기" autofocus>×</button></div></div>
       <div class="dataset-body">
-        <p id="dataset-description">업로드한 구매회원·회원구성 자료를 연도·성별·연령대·지역으로 집계했습니다. 상품·재고·매장 운영은 별도의 시연 데이터입니다.</p>
+        <p id="dataset-description">구매회원 자료는 연도별로, 회원 구성 자료는 성별과 연령대, 지역별로 정리했습니다. 상품 재고와 매장 운영은 시연용입니다.</p>
         <div class="dataset-context"><span class="dataset-badge">실제 자료 집계</span><span class="dataset-clock"></span><span class="dataset-scenario"></span></div>
         <dl class="dataset-counts"></dl>
         <div class="dataset-tabs" role="tablist" aria-label="데이터셋 분류">
           <button type="button" role="tab" id="dataset-tab-purchases" aria-controls="dataset-panel-purchases" aria-selected="true" data-dataset-tab="purchases">구매회원 분석</button>
           <button type="button" role="tab" id="dataset-tab-members" aria-controls="dataset-panel-members" aria-selected="false" tabindex="-1" data-dataset-tab="members">회원 구성</button>
-          <button type="button" role="tab" id="dataset-tab-inventory" aria-controls="dataset-panel-inventory" aria-selected="false" tabindex="-1" data-dataset-tab="inventory">상품·재고</button>
-          <button type="button" role="tab" id="dataset-tab-services" aria-controls="dataset-panel-services" aria-selected="false" tabindex="-1" data-dataset-tab="services">매장·서비스</button>
+          <button type="button" role="tab" id="dataset-tab-inventory" aria-controls="dataset-panel-inventory" aria-selected="false" tabindex="-1" data-dataset-tab="inventory">상품 재고</button>
+          <button type="button" role="tab" id="dataset-tab-services" aria-controls="dataset-panel-services" aria-selected="false" tabindex="-1" data-dataset-tab="services">매장 서비스</button>
           <button type="button" role="tab" id="dataset-tab-ontology" aria-controls="dataset-panel-ontology" aria-selected="false" tabindex="-1" data-dataset-tab="ontology">온톨로지</button>
           <button type="button" role="tab" id="dataset-tab-json" aria-controls="dataset-panel-json" aria-selected="false" tabindex="-1" data-dataset-tab="json">원본 JSON</button>
         </div>
         <section class="dataset-panel" id="dataset-panel-purchases" role="tabpanel" aria-labelledby="dataset-tab-purchases"></section>
         <section class="dataset-panel" id="dataset-panel-members" role="tabpanel" aria-labelledby="dataset-tab-members" hidden></section>
         <section class="dataset-panel" id="dataset-panel-inventory" role="tabpanel" aria-labelledby="dataset-tab-inventory" hidden>
-          <h3>상품과 사이즈별 재고 · 시연 데이터</h3><p>사진·상품명은 업로드 자료를 포함합니다. 가격·재고는 시연용이며, 구매회원 자료에서 굿즈 취향이나 재고를 추정하지 않습니다.</p>
-          <div class="dataset-filters"><label>상품 검색<input type="search" class="dataset-search" placeholder="상품명·선수·사이즈" aria-label="데이터셋 상품 검색"></label><label>상품 범위<select class="dataset-scope"><option value="all">전체 상품</option><option value="storefront">사진 상품</option><option value="example">관계 시연용 상품</option></select></label></div>
+          <h3>상품과 사이즈별 재고 (시연용)</h3><p>사진과 상품명은 업로드 자료를 포함합니다. 가격과 재고는 시연용이며, 구매회원 자료에서 굿즈 취향이나 재고를 추정하지 않습니다.</p>
+          <div class="dataset-filters"><label>상품 검색<input type="search" class="dataset-search" placeholder="상품명, 선수, 사이즈" aria-label="데이터셋 상품 검색"></label><label>상품 범위<select class="dataset-scope"><option value="all">전체 상품</option><option value="storefront">사진 상품</option><option value="example">관계 시연용 상품</option></select></label></div>
           <p class="dataset-inventory-count" role="status"></p><div class="dataset-inventory"></div>
         </section>
-        <section class="dataset-panel" id="dataset-panel-services" role="tabpanel" aria-labelledby="dataset-tab-services" hidden><h3>매장과 서비스 상태 · 시연 데이터</h3><p>데이터 설정에서 선택한 시각·상황으로 계산한 값입니다. 실제 회원 집계는 이 설정으로 바뀌지 않습니다.</p><div class="dataset-services"></div></section>
-        <section class="dataset-panel" id="dataset-panel-ontology" role="tabpanel" aria-labelledby="dataset-tab-ontology" hidden><h3>상품 온톨로지 · 시연 관계</h3><p>상품을 선수·디자인·사이즈·위치·마킹지와 연결해 조건 검색에 사용합니다. 구매회원의 성별·연령·지역에서 상품 취향을 추정한 관계가 아닙니다.</p><label class="dataset-relation-label">관계 종류<select class="dataset-relation-filter"><option value="">전체 관계</option></select></label><p class="dataset-relation-count" role="status"></p><div class="dataset-relations"></div></section>
-        <section class="dataset-panel" id="dataset-panel-json" role="tabpanel" aria-labelledby="dataset-tab-json" hidden><h3>가공 데이터 JSON 미리보기</h3><p>회원 집계 표는 각각 앞 20개 집단을 미리 보여줍니다. 위의 JSON 버튼으로 전체 회원 집계와 상품·시뮬레이션을 내려받을 수 있습니다. 출처는 meta.sources에서 구분합니다.</p><pre class="dataset-json" tabindex="0" aria-label="데이터셋 원본 JSON"></pre></section>
-        <div class="dataset-footer"><span>회원 자료: 업로드 원본 집계 · 상품·매장: 독립 시연 데이터</span></div>
+        <section class="dataset-panel" id="dataset-panel-services" role="tabpanel" aria-labelledby="dataset-tab-services" hidden><h3>매장과 서비스 상태 (시연용)</h3><p>데이터 설정에서 선택한 시각과 상황으로 계산한 값입니다. 실제 회원 집계는 이 설정으로 바뀌지 않습니다.</p><div class="dataset-services"></div></section>
+        <section class="dataset-panel" id="dataset-panel-ontology" role="tabpanel" aria-labelledby="dataset-tab-ontology" hidden><h3>상품 온톨로지 (시연용 관계)</h3><p>상품을 선수, 디자인, 사이즈, 위치, 마킹지와 연결해 조건 검색에 사용합니다. 구매회원의 성별, 연령, 지역에서 상품 취향을 추정한 관계가 아닙니다.</p><label class="dataset-relation-label">관계 종류<select class="dataset-relation-filter"><option value="">전체 관계</option></select></label><p class="dataset-relation-count" role="status"></p><div class="dataset-relations"></div></section>
+        <section class="dataset-panel" id="dataset-panel-json" role="tabpanel" aria-labelledby="dataset-tab-json" hidden><h3>가공 데이터 JSON 미리보기</h3><p>회원 집계 표는 각각 앞 20개 집단을 미리 보여줍니다. 위의 JSON 버튼으로 전체 회원 집계, 상품 정보와 시뮬레이션 값을 내려받을 수 있습니다. 출처는 meta.sources에서 구분합니다.</p><pre class="dataset-json" tabindex="0" aria-label="데이터셋 원본 JSON"></pre></section>
+        <div class="dataset-footer"><span>회원 자료는 업로드 원본을 집계했고, 상품과 매장은 시연 데이터입니다.</span></div>
       </div>`;
     document.body.append(dialog);
     const find=selector=>dialog.querySelector(selector);
@@ -82,11 +82,11 @@ const WizDataset = (() => {
         if(scope.value==='storefront'&&!shown||scope.value==='example'&&shown)continue;
         for(const variant of item.variants){
           if(!terms.every(t=>(item.name+' '+(product.player||'')+' '+variant.size).toLowerCase().includes(t)))continue;
-          ids.add(item.id);rows.push([[item.name,'#'+item.id+' · '+(shown?'사진 상품':'관계 시연용')],variant.size,number(item.price)+'원',variant.opening_stock,variant.on_hand,variant.available,stockNames[variant.status]]);
+          ids.add(item.id);rows.push([[item.name,'#'+item.id+' '+(shown?'사진 상품':'관계 시연용')],variant.size,number(item.price)+'원',variant.opening_stock,variant.on_hand,variant.available,stockNames[variant.status]]);
         }
       }
-      find('.dataset-inventory-count').textContent='상품 '+ids.size+'종 · 사이즈별 재고 '+rows.length+'건';
-      table(find('.dataset-inventory'),'상품·사이즈별 합성 재고',['상품','사이즈','예시 가격','개점 재고','보유 재고','판매 가능','상태'],rows);
+      find('.dataset-inventory-count').textContent='상품 '+ids.size+'종, 사이즈별 재고 '+rows.length+'건';
+      table(find('.dataset-inventory'),'상품별 사이즈 재고',['상품','사이즈','예시 가격','개점 재고','보유 재고','판매 가능','상태'],rows);
     }
     function services(){
       const target=find('.dataset-services');target.replaceChildren();
@@ -101,20 +101,20 @@ const WizDataset = (() => {
       section('구역별 혼잡도',['구역','인원','혼잡도'],data.zones.map(z=>[z.name,z.visitors+'명',crowdNames[z.crowd]]));
       section('픽업 시간대',['수령 시간','정원','선택 가능 수량','상태'],pickup.slots.map(slot=>[slot.start.slice(11,16)+'–'+slot.end.slice(11,16),slot.capacity,slot.remaining,slotReasons[slot.reason]]));
     }
-    for(const relation of new Set(WizKnowledge.edges.map(e=>e.rel))){const option=document.createElement('option');option.value=relation;option.textContent=relationNames[relation]+' · '+relation;relationFilter.append(option);}
+    for(const relation of new Set(WizKnowledge.edges.map(e=>e.rel))){const option=document.createElement('option');option.value=relation;option.textContent=relationNames[relation]+' ('+relation+')';relationFilter.append(option);}
     function ontology(){
       const edges=WizKnowledge.edges.filter(edge=>!relationFilter.value||edge.rel===relationFilter.value);
       const node=id=>[WizKnowledge.get(id)?.name||id,id];
-      find('.dataset-relation-count').textContent='전체 개체 '+WizKnowledge.nodes.length+'개 · 표시 관계 '+edges.length+'건 / 전체 '+WizKnowledge.edges.length+'건';
+      find('.dataset-relation-count').textContent='전체 개체 '+WizKnowledge.nodes.length+'개, 표시 관계 '+edges.length+'건 / 전체 '+WizKnowledge.edges.length+'건';
       table(find('.dataset-relations'),'온톨로지 관계',['출발 개체','관계','연결 개체'],edges.map(edge=>[node(edge.from),[relationNames[edge.rel]||edge.rel,edge.rel],node(edge.to)]));
     }
     function render(){
       if(!dialog.open)return;
       const positions=[...dialog.querySelectorAll('.dataset-panel:not([hidden]) .dataset-table-wrap')].map(wrap=>wrap.scrollLeft);
       const fans=WizFans.data,observed=['purchases','members','json'].includes(active);
-      find('.dataset-badge').textContent=observed?'실제 자료 집계':'상품·매장 시연';
-      find('.dataset-clock').textContent=observed?'구매회원 2017–2025 · 제공 7개 연도':data.meta.simulation_time.slice(0,16).replace('T',' ')+' · 한국';
-      find('.dataset-scenario').textContent=observed?'2020·2021 자료 없음 · 회원 구성 기준 연도 미제공':(data.store.open?'영업 중':'영업 종료')+' · '+scenarioNames[data.meta.scenario]+' · 시드 '+data.meta.seed;
+      find('.dataset-badge').textContent=observed?'실제 자료 집계':'상품과 매장 시연';
+      find('.dataset-clock').textContent=observed?'구매회원 2017–2025 (제공 7개 연도)':data.meta.simulation_time.slice(0,16).replace('T',' ')+' 한국';
+      find('.dataset-scenario').textContent=observed?'2020년과 2021년 자료 없음. 회원 구성의 기준 연도는 미제공.':(data.store.open?'영업 중':'영업 종료')+', '+scenarioNames[data.meta.scenario]+', 시드 '+data.meta.seed;
       const counts=[['제공 연도',fans?fans.meta.purchase_years.length+'개':'—'],['누적 구매회원 관측',fans?number(fans.meta.purchase_observations)+'건':'—'],['회원 구성 관측',fans?number(fans.meta.membership_observations)+'건':'—'],['연도별 구매 집단',fans?number(fans.purchase_cohorts.length)+'개':'—']];
       find('.dataset-counts').replaceChildren(...counts.map(([label,value])=>{const box=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=label;dd.textContent=value;box.append(dt,dd);return box;}));
       find('.dataset-download').disabled=!fans;
