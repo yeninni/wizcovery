@@ -8,15 +8,15 @@ const WizKnowledge = (() => {
     {id:'zone:marking-sheet',type:'Zone',name:'마킹지'},
     {id:'zone:checkout',type:'Zone',name:'계산대'},
     {id:'zone:marking-service',type:'Service',name:'매장 밖 마킹 공간'},
-    {id:'service:pickup',type:'Service',name:'위즈픽업'},
-    {id:'kit:choi-home',type:'MarkingKit',name:'최원준 홈 마킹지',price:20000,evidence:'demo',stock:5}
+    {id:'service:pickup',type:'Service',name:'위즈픽업'}
   ];
-  const edges = [
-    {from:'kit:choi-home',rel:'forPlayer',to:'player:choi'},
-    {from:'kit:choi-home',rel:'locatedIn',to:'zone:marking-sheet'},
-    {from:'kit:choi-home',rel:'appliedAt',to:'zone:marking-service'},
-    {from:'product:4',rel:'compatibleWith',to:'kit:choi-home',evidence:'demo'}
-  ];
+  const edges = [];
+  // Shared blank-shirt stock, separate named marking kits. These are demo combinations.
+  for(const player of WizRoster.players)for(const [design,label,productId] of [['home','홈',4],['away','어웨이',591]]){
+    const id=player.id==='player:choi'&&design==='home'?'kit:choi-home':'kit:'+player.id.slice(7)+'-'+design;
+    nodes.push({id,type:'MarkingKit',name:player.name+' '+label+' 마킹지',playerId:player.id,number:player.number,design,price:20000,evidence:'demo_template',stock:5});
+    edges.push({from:id,rel:'forPlayer',to:player.id},{from:id,rel:'locatedIn',to:'zone:marking-sheet'},{from:id,rel:'appliedAt',to:'zone:marking-service'},{from:'product:'+productId,rel:'compatibleWith',to:id,evidence:'demo_template'});
+  }
   products.forEach(p=>{
     const id='product:'+p.id;
     nodes.push({id,type:'Product',name:p.name,source:p,archived:!!p.archived});
@@ -32,6 +32,7 @@ const WizKnowledge = (() => {
   WizRoster.players.filter(p=>p.number!==null).forEach(p=>{nodes.push({id:'number:'+p.id,type:'JerseyNumber',name:p.number,evidence:'published_roster_snapshot'});edges.push({from:p.id,rel:'hasNumber',to:'number:'+p.id,evidence:'published_roster_snapshot'});});
   const get=id=>nodes.find(n=>n.id===id);
   const related=(id,rel)=>edges.filter(e=>e.from===id&&e.rel===rel).map(e=>get(e.to));
+  const markingKit=(productId,playerId)=>playerId?related('product:'+productId,'compatibleWith').find(kit=>related(kit.id,'forPlayer').some(player=>player.id===playerId))||null:null;
   function parse(raw){
     const q=raw.trim();const size=q.match(/(?:^|\D)(90|95|100|105)(?!\d)/)?.[1]||'';
     const player=WizRoster.findInText(q);
@@ -43,14 +44,14 @@ const WizKnowledge = (() => {
     const tag=/입문자|풀세트/.test(q)?'tag:starter':/원정.*패키지/.test(q)?'tag:away':/여름|쿨링/.test(q)?'tag:summer':'';
     const supported=!q||!!(player||size||budget||kind||keywords.length||/마킹|픽업|홈|어웨이|원정|응원|굿즈|선데이|입문자|풀세트|패키지|여름|쿨링/.test(q));
     const residue=remaining.replace(/입문자용|입문자|풀세트|패키지|원정 응원용|여름 시즌|여름|쿨링|선데이|마킹키트|마킹지|마킹|픽업|유니폼|타월|타올|모자|볼캡|키링|수원|콜라보|어웨이|원정|홈|응원|굿즈|오늘|경기장|구장|사이즈|선수|이하|미만|미리|사고|싶어|싶다|찾아줘|찾고|추천|가능한|가능|하고|할|에서|받을|받고|있는|해줘|주세요|으로|까지|짜리|원|만|\d|[\s,.?!]/g,'').replace(/^[은는이가을를의와과도]+$/,'');
-    return {size,budget,kind,player:player?.id||'',tag,marking:kind!=='마킹키트'&&q.includes('마킹'),pickup:q.includes('픽업'),style:tag==='tag:away'?'':q.includes('선데이')?'sunday':/어웨이|원정/.test(q)?'away':q.includes('홈')?'home':'',keywords,exclusive:q.includes('미만'),supported:supported&&!residue,unknown:residue};
+    return {size,budget,kind,player:player?.id||'',tag,marking:kind!=='마킹키트'&&(q.includes('마킹')||!!player&&(!kind||kind==='유니폼')),pickup:q.includes('픽업'),style:tag==='tag:away'?'':q.includes('선데이')?'sunday':/어웨이|원정/.test(q)?'away':q.includes('홈')?'home':'',keywords,exclusive:q.includes('미만'),supported:supported&&!residue,unknown:residue};
   }
   function search(f){
     const results=[];const blocked=[];
     if(f.supported===false)return {results,blocked};
     for(const p of products){
       if(p.archived)continue;
-      const id='product:'+p.id,kit=related(id,'compatibleWith')[0];
+      const id='product:'+p.id,kit=markingKit(p.id,f.player);
       const directPlayer=related(id,'forPlayer').some(n=>n.id===f.player);
       const kitPlayer=kit&&related(kit.id,'forPlayer').some(n=>n.id===f.player);
       if(f.tag&&!related(id,'taggedAs').some(n=>n.id===f.tag))continue;
@@ -71,13 +72,13 @@ const WizKnowledge = (() => {
         const relations=[{from:p.name,rel:'사이즈별 재고',to:size+' '+p.sizes[size]+'개'}];
         const reasons=['공통 상품 데이터에서 '+size+' 사이즈 재고 '+p.sizes[size]+'개 확인'];
         if(f.player){relations.push({from:extra?extra.name:p.name,rel:'관련 선수',to:get(f.player).name});reasons.push(extra?get(f.player).name+' 마킹지와 연결 가능한 조합':get(f.player).name+' 선수 상품');}
-        if(extra){relations.push({from:p.name,rel:'호환 마킹지',to:extra.name},{from:extra.name,rel:'작업 장소',to:'매장 밖 마킹 공간'});reasons.push('유니폼 + 마킹지 합계 '+total.toLocaleString('ko-KR')+'원 작업비 별도 확인');}
+        if(extra){relations.push({from:p.name,rel:'호환 마킹지',to:extra.name},{from:extra.name,rel:'작업 장소',to:'매장 밖 마킹 공간'});reasons.push('유니폼 + 마킹지 합계 '+total.toLocaleString('ko-KR')+'원 작업비 별도 확인','선수별 마킹지는 시연용으로 구성한 상품입니다.');if(extra.number===null)reasons.push('공개 명단에 등번호가 없어 제작 전 확인이 필요합니다.');else reasons.push(get(extra.playerId).name+' 선수 등번호 '+extra.number+'번');}
         else if(f.marking&&premarked)reasons.push('마킹이 포함된 상품 추가 마킹 작업 불필요');
         if(f.tag){relations.push({from:p.name,rel:'상황별 구성 후보',to:get(f.tag).name});reasons.push(get(f.tag).name+' 태그로 연결된 개별 상품 완성 패키지 아님');}
         if(f.budget)reasons.push('상품 합계가 예산 '+Number(f.budget).toLocaleString('ko-KR')+'원 '+(f.exclusive?'미만':'이하'));
         if(f.pickup){relations.push({from:p.name,rel:'수령 방법',to:'위즈픽업'});reasons.push('추가 마킹 작업이 없는 픽업 대상 시간대 선택 필요');}
         const zone=related(id,'locatedIn')[0];if(zone)relations.push({from:p.name,rel:'위치',to:zone.name});
-        results.push({p,size,extra,total,reasons,relations,pickup:!premarked&&!extra});
+        results.push({p,size,extra,total,player:f.player?get(f.player):null,reasons,relations,pickup:!premarked&&!extra});
       }
     }
     results.sort((a,b)=>a.total-b.total||a.p.id-b.p.id||Number(a.size)-Number(b.size));return {results,blocked};
@@ -88,5 +89,5 @@ const WizKnowledge = (() => {
     return same.slice(0,4).map(r=>({...r,difference:f.size+' → '+r.size+' 사이즈 변경. 착용감이 다르므로 사이즈 확인 필요'}));
   }
   function hasPlayerProducts(playerId){return products.some(p=>!p.archived&&(related('product:'+p.id,'forPlayer').some(player=>player.id===playerId)||related('product:'+p.id,'compatibleWith').some(kit=>related(kit.id,'forPlayer').some(player=>player.id===playerId))));}
-  return {nodes,edges,get,related,parse,search,alternatives,hasPlayerProducts};
+  return {nodes,edges,get,related,markingKit,parse,search,alternatives,hasPlayerProducts};
 })();

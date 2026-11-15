@@ -47,7 +47,7 @@ test('dataset toggle presents and exports the active data without changing the d
     assert.equal(await slotTable.locator('tbody tr').count(),await page.evaluate(()=>WizSim.data.pickup.slots.length));
     await page.getByRole('tab',{name:'온톨로지',exact:true}).click();
     await page.locator('.dataset-relation-filter').selectOption('compatibleWith');
-    assert.equal(await page.locator('.dataset-relations tbody tr').count(),1);
+    assert.equal(await page.locator('.dataset-relations tbody tr').count(),180);
     assert.match(await page.locator('.dataset-relations').innerText(),/product:4/);assert.match(await page.locator('.dataset-relations').innerText(),/kit:choi-home/);
     await page.getByRole('tab',{name:'원본 JSON'}).click();
     let exported=JSON.parse(await page.locator('.dataset-json').textContent());

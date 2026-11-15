@@ -11,15 +11,19 @@ function playerOptions(){
  const source=text('a','명단 출처');source.href=WizRoster.meta.source.url;source.target='_blank';source.rel='noopener noreferrer';note.append(source);select.after(note);select.setAttribute('aria-describedby',note.id);
 }
 playerOptions();
+function syncMarking(){const kind=$('#kind').value;$('#marking').checked=!!$('#player').value&&(!kind||kind==='유니폼');}
+$('#player').onchange=syncMarking;$('#kind').onchange=syncMarking;
 function fields(f){for(const key of ['player','kind','style','size','budget','tag'])$('#'+key).value=f[key]||'';for(const key of ['marking','pickup'])$('#'+key).checked=!!f[key]}
 function link(label,url,parent){const a=text('a',label);a.href=url;parent.append(a)}
+function locationUrl(r,journey=false){const params=new URLSearchParams({product:r.p.id,size:r.size});if(r.extra){params.set('player',r.extra.playerId);params.set('kit',r.extra.id);}if(journey)params.set('journey','marking');return 'store-map.html?'+params;}
 function card(r,alternative=false){
  const el=document.createElement('article');el.className='result';
  const main=document.createElement('div');main.className='result-main';const visual=document.createElement('div');visual.className='result-visual';visual.setAttribute('aria-hidden','true');visual.innerHTML=productArt(r.p);const content=document.createElement('div');content.className='result-content';
  content.append(text('span',alternative?'사이즈 변경':r.extra?'마킹 조합':'구매 가능','badge'),text('h3',productTitle(r.p)+(r.extra?' + '+r.extra.name:'')),text('p',r.size+' 사이즈 재고 '+r.p.sizes[r.size]+'개'+(r.extra?' / 마킹지 '+r.extra.stock+'개':'')));
+ if(r.extra)content.append(text('p',r.extra.number===null?'등번호는 제작 전 확인이 필요합니다.':'마킹 등번호 '+r.extra.number+'번','marking-number'));
  const price=text('div',r.total.toLocaleString('ko-KR')+'원','price');if(r.extra)price.append(text('small',' (작업비 별도)'));content.append(price);
  if(alternative){content.append(text('p',r.difference,'blocked'),WizUX.sizeButton(active.size,r.size));}else if(r.p.category==='유니폼')content.append(WizUX.sizeButton(r.size,''));
- const actions=document.createElement('div');actions.className='actions';link('위치 확인','store-map.html?product='+r.p.id+'&size='+encodeURIComponent(r.size),actions);if(r.extra)link('마킹 경로','store-map.html?product='+r.p.id+'&size='+encodeURIComponent(r.size)+'&journey=marking',actions);if(r.pickup)link('픽업 신청','pickup.html?product='+r.p.id+'&size='+encodeURIComponent(r.size),actions);content.append(actions);main.append(visual,content);el.append(main);
+ const actions=document.createElement('div');actions.className='actions';link('위치 확인',locationUrl(r),actions);if(r.extra)link('마킹 경로',locationUrl(r,true),actions);if(r.pickup)link('픽업 신청','pickup.html?product='+r.p.id+'&size='+encodeURIComponent(r.size),actions);content.append(actions);main.append(visual,content);el.append(main);
  const details=document.createElement('details');details.className='explanation';details.append(text('summary','추천 근거'));
  const why=text('div','적용한 조건','reason');const list=document.createElement('ul');r.reasons.forEach(reason=>list.append(text('li',reason)));why.append(list);details.append(why);
  for(const edge of r.relations){const row=document.createElement('div');row.className='relation';row.append(text('span',edge.from),text('i','→ '+edge.rel+' →'),text('span',edge.to));details.append(row)}el.append(details);

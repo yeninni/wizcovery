@@ -18,9 +18,18 @@ test('number relations distinguish a real zero jersey from an unprovided militar
  for(const player of roster.players.filter(p=>p.status==='military'))assert.equal(knowledge.related(player.id,'hasNumber').length,0);
  for(const edge of knowledge.edges){assert.ok(knowledge.get(edge.from),'missing from '+edge.from);assert.ok(knowledge.get(edge.to),'missing to '+edge.to);}
 });
-test('recognized players without merchandise do not fall back to unrelated generic products',()=>{
- const {knowledge}=model();const f=knowledge.parse('안현민 유니폼 95');assert.equal(f.supported,true);assert.equal(knowledge.hasPlayerProducts(f.player),false);
- assert.equal(knowledge.search(f).results.length,0);assert.equal(knowledge.search(f).blocked.length,0);
+test('every listed player has named home and away demo bundles without mixing player identity',()=>{
+ const {roster,knowledge}=model();
+ for(const player of roster.players)for(const [design,label,productId] of [['home','홈',4],['away','어웨이',591]]){
+  const f=knowledge.parse(player.name+' '+label+' 유니폼 95');assert.equal(f.supported,true);assert.equal(f.marking,true);assert.equal(knowledge.hasPlayerProducts(f.player),true);
+  const bundle=knowledge.search(f).results.find(r=>r.extra);assert.ok(bundle,player.name+' '+label);assert.equal(bundle.p.id,productId);assert.equal(bundle.extra.playerId,player.id);assert.equal(bundle.extra.number,player.number);assert.equal(bundle.extra.design,design);assert.equal(bundle.total,109000);assert.equal(bundle.pickup,false);assert.match(bundle.extra.name,new RegExp(player.name));
+ }
  assert.equal(knowledge.parse('미등록선수 유니폼 95').supported,false);assert.equal(knowledge.parse('강백호 유니폼 95').supported,false);
  const kit=knowledge.parse('장성우 어웨이 마킹키트');assert.equal(knowledge.hasPlayerProducts(kit.player),true);assert.equal(knowledge.search(kit).results[0].p.id,584);
+});
+test('new player bundles obey total budget, actual size stock and individual kit availability',()=>{
+ const {knowledge:k}=model(),f=k.parse('안현민 홈 유니폼 95'),bundle=()=>k.search(f).results.find(r=>r.extra);
+ assert.equal(k.parse('안현민').marking,true);assert.ok(k.search({...f,budget:'109000'}).results.some(r=>r.extra));assert.equal(k.search({...f,budget:'108999'}).results.length,0);assert.equal(k.search({...f,budget:'109000',exclusive:true}).results.length,0);assert.equal(k.search({...f,pickup:true}).results.length,0);assert.equal(k.search({...f,size:'999'}).results.length,0);
+ bundle().extra.stock=0;assert.equal(k.search(f).results.length,0);assert.ok(k.search(k.parse('소형준 홈 유니폼 95')).results.some(r=>r.extra));
+ const kit=k.markingKit(4,f.player);kit.stock=5;k.get('product:4').source.sizes['95']=0;const result=k.search(f);assert.equal(result.results.length,0);assert.ok(result.blocked.length>0);const alternatives=k.alternatives(f,result.blocked);assert.ok(alternatives.length>0);assert.ok(alternatives.every(r=>r.size!=='95'&&r.extra.playerId===f.player));
 });
